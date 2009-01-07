@@ -45,7 +45,7 @@ void delay(int16 cycles)
 
 // Read sensor RAM
 // Returns temperature in °K
-int16 ReadTemp(int8 addr, int8 select)    
+int16 ReadTemp(int8 addr, int8 select)
 {
    unsigned char arr[6];         // Buffer for the sent bytes
    int8 crc;                     // Readed CRC
@@ -135,7 +135,7 @@ void main()
                {
                   output_low(HEATING);
                }
-   
+
             if (open>0) open--;
 
             safety_counter=0;
@@ -190,7 +190,6 @@ void main()
          {
             delay(SEND_DELAY);
             putc(output[j++]);
-            output_toggle(DOME);
          }
       }
 
