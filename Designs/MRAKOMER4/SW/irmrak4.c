@@ -96,7 +96,7 @@ void main()
    restart_wdt();
    printf("\n\r* Mrakomer %s (C) 2007 KAKL *\n\r",VER);   // Welcome message
    printf("* %s *\n\r",REV);
-   printf("<#sequence> <ambient [1/100 °C]> <sky [1/100 °C]> ");
+   printf("<#sequence> <ambient [1/100 C]> <sky [1/100 C]> ");
    printf("<heating [s]> <dome [s]>\n\r\n\r");
    tempa=ReadTemp(SA, RAM_Tamb);       // Dummy read
    temp=ReadTemp(SA, RAM_Tobj1);
@@ -180,17 +180,20 @@ void main()
       to=temp*2-27315;
 
       { // printf
-         char output[30];  // Output buffer
+         char output[10];  // Output buffer
          int8 j;           // Counter
 
-         sprintf(output,"#%Lu %Ld %Ld %u %u\n\r\0", seq, ta, to, heat, open);
-
-         j=0;
-         while(output[j]!=0)
-         {
-            delay(SEND_DELAY);
-            putc(output[j++]);
-         }
+         delay(SEND_DELAY);
+         sprintf(output,"#%Lu ", seq);
+         j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
+         sprintf(output,"%Ld ", ta);
+         j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
+         sprintf(output,"%Ld ", to);
+         j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
+         sprintf(output,"%u", heat);
+         j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
+         sprintf(output,"%u\n\r\0", open);
+         j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
       }
 
       delay(MEASURE_DELAY);   // Delay to a next measurement
