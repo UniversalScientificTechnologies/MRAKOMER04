@@ -1,6 +1,6 @@
 /**** IR Mrakomer 4 ****/
 #define VERSION "4.0"
-#define ID "$Id: irmrak3.c 1215 2008-08-08 12:25:25Z kakl $"
+#define ID "$Id$"
 #include "irmrak4.h"
 
 #define  MAXHEAT        10       // Number of cycles for heating
