@@ -3,10 +3,12 @@
 #define ID "$Id$"
 #include "irmrak4.h"
 
-#define  MAXHEAT        10       // Number of cycles for heating
-#define  MAXOPEN        10       // Number of cycles for dome open
-#define  MEASURE_DELAY  10000
-#define  SEND_DELAY     50
+#define  MAXHEAT        20       // Number of cycles for heating
+#define  MAXOPEN        20       // Number of cycles for dome open
+#define  MEASURE_DELAY  10000    // Delay to a next measurement
+#define  RESPONSE_DELAY 100      // Reaction time after receiving a command
+#define  SAFETY_COUNT   100      // Time of one emergency cycle
+#define  SEND_DELAY     50       // Time between two characters on RS232
 
 #define  DOME        PIN_B4   // Dome controll port
 #define  HEATING     PIN_B3   // Heating for defrosting
@@ -16,10 +18,10 @@
 #bit OERR = 0x18.1
 #bit FERR = 0x18.2
 
-char  VER[4]=VERSION;
+char  VER[4]=VERSION;   // Buffer for concatenate of a version string
 char  REV[50]=ID;
 
-int8  heat;
+int8  heat;    // Status variables
 int8  open;
 
 inline void toggle_dome(void)
@@ -35,15 +37,15 @@ void delay(int16 cycles)
    int16 i;
 
    for(i=0; i<cycles; i++) {toggle_dome(); delay_us(100);}
-
-   restart_wdt();
 }
 
 
 #include "smb.c"
 
 
-int16 ReadTemp(int8 addr, int8 select)    // Read sensor RAM
+// Read sensor RAM
+// Returns temperature in °K
+int16 ReadTemp(int8 addr, int8 select)    
 {
    unsigned char arr[6];         // Buffer for the sent bytes
    int8 crc;                     // Readed CRC
@@ -74,8 +76,9 @@ int16 ReadTemp(int8 addr, int8 select)    // Read sensor RAM
 
 void main()
 {
-   unsigned int16 n, temp, tempa;
+   unsigned int16 seq, temp, tempa;
    signed int16 ta, to;
+   int8 safety_counter;
 
    output_low(HEATING);                 // Heating off
    setup_wdt(WDT_2304MS);               // Setup Watch Dog
@@ -93,17 +96,19 @@ void main()
    restart_wdt();
    printf("\n\r* Mrakomer %s (C) 2007 KAKL *\n\r",VER);   // Welcome message
    printf("* %s *\n\r",REV);
-   printf("<#seq.> <ambient temp.> <space temp.> <heating> <dome>\n\r\n\r");
+   printf("<#sequence> <ambient [1/100 °C]> <sky [1/100 °C]> ");
+   printf("<heating [s]> <dome [s]>\n\r\n\r");
    tempa=ReadTemp(SA, RAM_Tamb);       // Dummy read
    temp=ReadTemp(SA, RAM_Tobj1);
 
-   n=0;
+   seq=0;
    heat=0;
    open=0;
 
 //   enable_interrupts(GLOBAL);
 //   enable_interrupts(INT_RDA);
 
+//---WDT
    restart_wdt();
 
    while(TRUE)
@@ -111,22 +116,36 @@ void main()
       while(kbhit()) getc();        // Flush USART buffer
       CREN=0; CREN=1;               // Reinitialise USART
 
+      safety_counter=0;
+
       do
       {
-         delay(MEASURE_DELAY);
-         if (heat>0)
-            {
-               output_high(HEATING);
-               heat--;
-            }
-            else
-            {
-               output_low(HEATING);
-            }
+         if (safety_counter<SAFETY_COUNT) safety_counter++;
 
-         if (open>0) open--;
+         delay(RESPONSE_DELAY);
+
+         if (safety_counter>=SAFETY_COUNT)
+         {
+            if (heat>0)
+               {
+                  output_high(HEATING);
+                  heat--;
+               }
+               else
+               {
+                  output_low(HEATING);
+               }
+   
+            if (open>0) open--;
+
+            safety_counter=0;
+//---WDT
+            restart_wdt();
+         }
       } while (!kbhit());
 
+//---WDT
+      restart_wdt();
       {
          char ch;
 
@@ -135,11 +154,11 @@ void main()
          switch (ch)
          {
             case 'h':
-               heat=MAXHEAT;           // Needs heating
+               heat=MAXHEAT;           // Need heating
                break;
 
             case 'c':
-               heat=0;                 // Needs colder
+               heat=0;                 // Need colder
                break;
 
             case 'o':
@@ -152,7 +171,7 @@ void main()
          }
       }
 
-      n++;        // Increment the number of measurement
+      seq++;        // Increment the number of measurement
 
       tempa=ReadTemp(SA, RAM_Tamb);       // Read temperatures from sensor
       temp=ReadTemp(SA, RAM_Tobj1);
@@ -164,7 +183,7 @@ void main()
          char output[30];  // Output buffer
          int8 j;           // Counter
 
-         sprintf(output,"#%Lu %Ld %Ld %u %u\n\r\0", n, ta, to, heat, open);
+         sprintf(output,"#%Lu %Ld %Ld %u %u\n\r\0", seq, ta, to, heat, open);
 
          j=0;
          while(output[j]!=0)
@@ -174,6 +193,10 @@ void main()
             output_toggle(DOME);
          }
       }
+
+      delay(MEASURE_DELAY);   // Delay to a next measurement
+//---WDT
+      restart_wdt();
    }
 }
 
