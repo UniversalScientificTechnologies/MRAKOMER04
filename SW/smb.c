@@ -5,6 +5,7 @@
 #define  RAM_Tobj1   0x07     // To1 address in the RAM
 #define  RAM_Tamb    0x06     // Ta address in the RAM
 
+
 //*High and Low level of clock
 #define HIGHLEV	40      // max. 50us
 #define LOWLEV	   100 	  // max. 30ms
@@ -34,7 +35,7 @@
 //**********************************************************************************************
 void SMB_START_bit(void)
 {
-   disable_interrupts(GLOBAL);
+//   disable_interrupts(GLOBAL);
 	mSDA_HIGH();			// Set SDA line
 	delay_us( TBUF );	// Wait a few microseconds
 	mSCL_HIGH();			// Set SCL line
@@ -45,8 +46,10 @@ void SMB_START_bit(void)
 							// Condition. After this period, the first clock is generated.
 							//(Thd:sta=4.0us min)
 	mSCL_LOW();				// Clear SCL line
-   enable_interrupts(GLOBAL);
+//   enable_interrupts(GLOBAL);
 	delay_us( TBUF );	// Wait a few microseconds
+   
+   toggle_dome();
 }
 //*********************************************************************************************
 //								STOP CONDITION ON SMBus
@@ -60,7 +63,7 @@ void SMB_START_bit(void)
 //*********************************************************************************************
 void SMB_STOP_bit(void)
 {
-   disable_interrupts(GLOBAL);
+//   disable_interrupts(GLOBAL);
 mSDA_HIGH();
 	mSCL_LOW();				// Clear SCL line
 	delay_us( TBUF );	// Wait a few microseconds
@@ -69,13 +72,15 @@ mSDA_HIGH();
 	mSCL_HIGH();			// Set SCL line
 	delay_us( TBUF );	// Stop condition setup time(Tsu:sto=4.0us min)
 	mSDA_HIGH();			// Set SDA line
-   enable_interrupts(GLOBAL);
+//   enable_interrupts(GLOBAL);
+
+   toggle_dome();
 }
 
 
 void SMB_send_bit(unsigned char bit_out)
 {
-   disable_interrupts(GLOBAL);
+//   disable_interrupts(GLOBAL);
 	if(bit_out==0) {mSDA_LOW();}
 	else	 	   {mSDA_HIGH();}
    delay_us(3);
@@ -84,7 +89,9 @@ void SMB_send_bit(unsigned char bit_out)
 	mSCL_LOW();						// Clear SCL line
 	delay_us( LOWLEV );			// Low Level of Clock Pulse
 //	mSDA_HIGH();				    // Master release SDA line ,
-   enable_interrupts(GLOBAL);
+//   enable_interrupts(GLOBAL);
+
+   toggle_dome();
 	return;
 }
 
@@ -92,7 +99,7 @@ unsigned char SMB_Receive_bit(void)
 {
 	unsigned char Ack_bit;
 
-   disable_interrupts(GLOBAL);
+//   disable_interrupts(GLOBAL);
 	mSDA_HIGH();  //_SDA_IO=1;						// SDA-input
 	mSCL_HIGH();					// Set SCL line
 	delay_us( HIGHLEV );			// High Level of Clock Pulse
@@ -100,8 +107,9 @@ unsigned char SMB_Receive_bit(void)
 	else		Ack_bit=0;			// /
 	mSCL_LOW();						// Clear SCL line
 	delay_us( LOWLEV );			// Low Level of Clock Pulse
-   enable_interrupts(GLOBAL);
+//   enable_interrupts(GLOBAL);
 
+   toggle_dome();
 	return	Ack_bit;
 }
 
@@ -133,7 +141,7 @@ unsigned char SMB_TX_byte(unsigned char Tx_buffer)
 	Ack_bit=SMB_Receive_bit();			  // Get acknowledgment bit
 
 	return	Ack_bit;
-}// End of TX_bite()
+}
 
 //*********************************************************************************************
 //									RECEIVE DATA ON SMBus
@@ -204,7 +212,7 @@ unsigned char PEC_calculation(unsigned char pec[]) // CRC calculation
             j=0x00;
             i--;
          }
-      }/*End of while */
+      }
 
       shift=BitPosition-8;   /*Get shift value for crc value*/
 
@@ -224,132 +232,16 @@ unsigned char PEC_calculation(unsigned char pec[]) // CRC calculation
             }
             crc[i]<<=1;
             crc[i]+=temp;
-         }/*End of for*/
+         }
          shift--;
-      }/*End of while*/
+      }
 
       //Exclusive OR between pec and crc
       for(i=0; i<=5; i++)
       {
          pec[i] ^=crc[i];
-      }/*End of for*/
+      }
    } while(BitPosition>8);/*End of do-while*/
 
    return pec[0];
-}/*End of PEC_calculation*/
-
-int16 ReadTemp(int8 addr, int8 select)    // Read sensor RAM
-{
-   unsigned char arr[6];         // Buffer for the sent bytes
-   int8 crc;                     // Readed CRC
-   int16 temp;                   // Readed temperature
-
-   addr<<=1;
-
-   SMB_STOP_bit();             //If slave send NACK stop comunication
-   SMB_START_bit();            //Start condition
-   SMB_TX_byte(addr);
-   SMB_TX_byte(RAM_Access|select);
-   SMB_START_bit();            //Repeated Start condition
-   SMB_TX_byte(addr);
-   arr[2]=SMB_RX_byte(ACK);        //Read low data,master must send ACK
-   arr[1]=SMB_RX_byte(ACK);     //Read high data,master must send ACK
-   temp=MAKE16(arr[1],arr[2]);
-   crc=SMB_RX_byte(NACK);         //Read PEC byte, master must send NACK
-   SMB_STOP_bit();             //Stop condition
-
-   arr[5]=addr;
-   arr[4]=RAM_Access|select;
-   arr[3]=addr;
-   arr[0]=0;
-   if (crc != PEC_calculation(arr)) temp=0; // Calculate and check CRC
-
-   return temp;
-}
-
-void main()
-{
-   unsigned int16 temp, tempa;
-   signed int16 ta, to;
-
-   setup_adc_ports(NO_ANALOGS);
-   setup_adc(ADC_OFF);
-   setup_psp(PSP_DISABLED);
-   setup_timer_0(RTCC_INTERNAL|RTCC_DIV_1);
-   setup_timer_1(T1_DISABLED);
-   setup_timer_2(T2_DISABLED,0,1);
-
-   output_low(KLAKSON);    // Ticho
-   output_high(LED);       // Blik
-   delay_ms(50);
-   output_low(LED);
-   printf("\n\r\n\rVER: %s\n\r\n\r", VER);   // Vypis verzi
-
-   enable_interrupts(INT_RDA);
-   enable_interrupts(GLOBAL);
-
-   flag=false;
-
-   while (true)
-   {
-         float ta1, ta2, to1, to2;
-         int16 s1, s2, s3, s4, s5, s6;
-         int8 c;
-         int8 tlacitko;
-
-         if (flag)
-         {
-            flag=false;
-
-            output_high(KLAKSON);
-            delay_ms(400);
-            output_low(KLAKSON);
-            delay_ms(100);
-            output_high(KLAKSON);
-            delay_ms(700);
-            output_low(KLAKSON);
-         }
-
-         tlacitko=0;
-
-         tempa=ReadTemp(1, RAM_Tamb);       // Read temperatures from sensor
-         temp=ReadTemp(1, RAM_Tobj1);
-         to=(signed int16)(temp*2-27315);
-         ta=(signed int16)(tempa*2-27315);
-         ta1=(float)ta/100;
-         to1=(float)to/100;
-
-         if(!input(TL)) tlacitko=1;
-
-         tempa=ReadTemp(2, RAM_Tamb);       // Read temperatures from sensor
-         temp=ReadTemp(2, RAM_Tobj1);
-         to=(signed int16)(temp*2-27315);
-         ta=(signed int16)(tempa*2-27315);
-         ta2=(float)ta/100;
-         to2=(float)to/100;
-//         printf("T2 %.1g %.1g ",(float)ta/100,(float)to/100);
-
-//         printf("S1 %Lu ", sonar_ping(SONAR1));
-         if(!input(TL)) tlacitko=1;
-         output_high(LED);
-         s1=sonar_ping(SONAR1);
-         output_low(LED);
-         if(!input(TL)) tlacitko=1;
-         s2=sonar_ping(SONAR2);
-         if(!input(TL)) tlacitko=1;
-         s3=sonar_ping(SONAR3);
-         if(!input(TL)) tlacitko=1;
-         s4=sonar_ping(SONAR4);
-         if(!input(TL)) tlacitko=1;
-         s5=sonar_ping(SONAR5);
-         if(!input(TL)) tlacitko=1;
-         s6=sonar_ping(SONAR6);
-         if(!input(TL)) tlacitko=1;
-         c=cmps_azimuth();
-         if(!input(TL)) tlacitko=1;
-
-         printf("#T1 %.1g %.1g T2 %.1g %.1g ",ta1,to1,ta2,to2);
-         printf("S1 %Lu S2 %Lu S3 %Lu S4 %Lu S5 %Lu S6 %Lu C %u TL %u\n\r",s1,s2,s3,s4,s5,s6,c,tlacitko);
-   }
-
 }
