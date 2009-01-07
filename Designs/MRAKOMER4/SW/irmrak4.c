@@ -90,7 +90,7 @@ void main()
    setup_comparator(NC_NC_NC_NC);
    setup_vref(FALSE);
 //   setup_oscillator(OSC_4MHZ|OSC_INTRC,+2); // Pokud je nutna kalibrace RCosc
-   setup_oscillator(OSC_4MHZ|OSC_INTRC);
+   setup_oscillator(OSC_8MHZ|OSC_INTRC);
 
    delay_ms(1000);
    restart_wdt();
@@ -190,7 +190,7 @@ void main()
          j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
          sprintf(output,"%Ld ", to);
          j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
-         sprintf(output,"%u", heat);
+         sprintf(output,"%u ", heat);
          j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
          sprintf(output,"%u\n\r\0", open);
          j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }

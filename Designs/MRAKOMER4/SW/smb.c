@@ -48,8 +48,6 @@ void SMB_START_bit(void)
 	mSCL_LOW();				// Clear SCL line
 //   enable_interrupts(GLOBAL);
 	delay_us( TBUF );	// Wait a few microseconds
-   
-   toggle_dome();
 }
 //*********************************************************************************************
 //								STOP CONDITION ON SMBus
@@ -73,8 +71,6 @@ mSDA_HIGH();
 	delay_us( TBUF );	// Stop condition setup time(Tsu:sto=4.0us min)
 	mSDA_HIGH();			// Set SDA line
 //   enable_interrupts(GLOBAL);
-
-   toggle_dome();
 }
 
 
@@ -87,11 +83,14 @@ void SMB_send_bit(unsigned char bit_out)
 	mSCL_HIGH();					// Set SCL line
 	delay_us( HIGHLEV );			// High Level of Clock Pulse
 	mSCL_LOW();						// Clear SCL line
+
+toggle_dome();
+
 	delay_us( LOWLEV );			// Low Level of Clock Pulse
 //	mSDA_HIGH();				    // Master release SDA line ,
 //   enable_interrupts(GLOBAL);
 
-   toggle_dome();
+toggle_dome();
 	return;
 }
 
@@ -106,10 +105,13 @@ unsigned char SMB_Receive_bit(void)
 	if(input(SDA))	Ack_bit=1;			// \ Read acknowledgment bit, save it in Ack_bit
 	else		Ack_bit=0;			// /
 	mSCL_LOW();						// Clear SCL line
+
+toggle_dome();
+
 	delay_us( LOWLEV );			// Low Level of Clock Pulse
 //   enable_interrupts(GLOBAL);
 
-   toggle_dome();
+toggle_dome();
 	return	Ack_bit;
 }
 
@@ -212,6 +214,7 @@ unsigned char PEC_calculation(unsigned char pec[]) // CRC calculation
             j=0x00;
             i--;
          }
+toggle_dome();
       }
 
       shift=BitPosition-8;   /*Get shift value for crc value*/
@@ -234,6 +237,7 @@ unsigned char PEC_calculation(unsigned char pec[]) // CRC calculation
             crc[i]+=temp;
          }
          shift--;
+toggle_dome();
       }
 
       //Exclusive OR between pec and crc
@@ -241,7 +245,7 @@ unsigned char PEC_calculation(unsigned char pec[]) // CRC calculation
       {
          pec[i] ^=crc[i];
       }
-   } while(BitPosition>8);/*End of do-while*/
+   } while(BitPosition>8);
 
    return pec[0];
 }
