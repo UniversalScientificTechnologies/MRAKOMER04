@@ -6,19 +6,19 @@
 #define  RAM_Tamb    0x06     // Ta address in the RAM
 
 
-//*High and Low level of clock
+// High and Low level of clock
 #define HIGHLEV	40      // max. 50us
 #define LOWLEV	   100 	  // max. 30ms
 #define TBUF	   20
 
-//SMBus control signals
+// SMBus control signals
 #define SCL    PIN_B0
 #define SDA    PIN_B1
 
-#define mSDA_HIGH()	output_float(SDA); // SDA float
-#define mSDA_LOW()   output_low(SDA);  // SDA low
-#define mSCL_HIGH()	output_float(SCL); //output_high(SCL);  // SCL high
-#define mSCL_LOW()   output_low(SCL);  // SCL low
+#define mSDA_HIGH()	output_float(SDA);   // SDA float
+#define mSDA_LOW()   output_low(SDA);     // SDA low
+#define mSCL_HIGH()	output_float(SCL);   // SCL float
+#define mSCL_LOW()   output_low(SCL);     // SCL low
 
 #define  ACK	 0
 #define	NACK   1
@@ -37,18 +37,19 @@ void SMB_START_bit(void)
 {
 //   disable_interrupts(GLOBAL);
 	mSDA_HIGH();			// Set SDA line
-	delay_us( TBUF );	// Wait a few microseconds
+	delay_us( TBUF );	   // Wait a few microseconds
 	mSCL_HIGH();			// Set SCL line
-	delay_us( TBUF );	// Generate bus free time between Stop
-							// and Start condition (Tbuf=4.7us min)
-	mSDA_LOW();				// Clear SDA line
-	delay_us( TBUF );	// Hold time after (Repeated) Start
-							// Condition. After this period, the first clock is generated.
-							//(Thd:sta=4.0us min)
+	delay_us( TBUF );	   // Generate bus free time between Stop
+							   // and Start condition (Tbuf=4.7us min)
+	mSDA_LOW();			   // Clear SDA line
+	delay_us( TBUF );	   // Hold time after (Repeated) Start Condition.
+							   // After this period, the first clock is generated.
+							   // (Thd:sta=4.0us min)
 	mSCL_LOW();				// Clear SCL line
 //   enable_interrupts(GLOBAL);
-	delay_us( TBUF );	// Wait a few microseconds
+	delay_us( TBUF );	   // Wait a few microseconds
 }
+
 //*********************************************************************************************
 //								STOP CONDITION ON SMBus
 //*********************************************************************************************
@@ -63,12 +64,12 @@ void SMB_STOP_bit(void)
 {
 //   disable_interrupts(GLOBAL);
 mSDA_HIGH();
-	mSCL_LOW();				// Clear SCL line
-	delay_us( TBUF );	// Wait a few microseconds
+	mSCL_LOW();			   // Clear SCL line
+	delay_us( TBUF );	   // Wait a few microseconds
 	mSDA_LOW();				// Clear SDA line
-	delay_us( TBUF );	// Wait a few microseconds
+	delay_us( TBUF );	   // Wait a few microseconds
 	mSCL_HIGH();			// Set SCL line
-	delay_us( TBUF );	// Stop condition setup time(Tsu:sto=4.0us min)
+	delay_us( TBUF );	   // Stop condition setup time(Tsu:sto=4.0us min)
 	mSDA_HIGH();			// Set SDA line
 //   enable_interrupts(GLOBAL);
 }
@@ -99,10 +100,10 @@ unsigned char SMB_Receive_bit(void)
 	unsigned char Ack_bit;
 
 //   disable_interrupts(GLOBAL);
-	mSDA_HIGH();  //_SDA_IO=1;						// SDA-input
+	mSDA_HIGH();  //_SDA_IO=1;	 	// SDA-input
 	mSCL_HIGH();					// Set SCL line
 	delay_us( HIGHLEV );			// High Level of Clock Pulse
-	if(input(SDA))	Ack_bit=1;			// \ Read acknowledgment bit, save it in Ack_bit
+	if(input(SDA))	Ack_bit=1;	// \ Read acknowledgment bit, save it in Ack_bit
 	else		Ack_bit=0;			// /
 	mSCL_LOW();						// Clear SCL line
 
@@ -134,13 +135,13 @@ unsigned char SMB_TX_byte(unsigned char Tx_buffer)
 	for(Bit_counter=8; Bit_counter; Bit_counter--)
 	{
 		if(Tx_buffer&0x80) bit_out=1; // If the current bit of Tx_buffer is 1 set bit_out
-		else			   bit_out=0; // else clear bit_out
+		else			   bit_out=0;     // else clear bit_out
 
-		SMB_send_bit(bit_out);			  // Send the current bit on SDA
-		Tx_buffer<<=1;				  // Get next bit for checking
+		SMB_send_bit(bit_out);			// Send the current bit on SDA
+		Tx_buffer<<=1;				      // Get next bit for checking
 	}
 
-	Ack_bit=SMB_Receive_bit();			  // Get acknowledgment bit
+	Ack_bit=SMB_Receive_bit();			// Get acknowledgment bit
 
 	return	Ack_bit;
 }
@@ -161,7 +162,7 @@ unsigned char SMB_RX_byte(unsigned char ack_nack)
 
 	for(Bit_Counter=8; Bit_Counter; Bit_Counter--)
 	{
-		if(SMB_Receive_bit())						// Get a bit from the SDA line
+		if(SMB_Receive_bit())				// Get a bit from the SDA line
 		{
 			RX_buffer <<= 1;					// If the bit is HIGH save 1  in RX_buffer
 			RX_buffer |=0b00000001;
@@ -173,7 +174,7 @@ unsigned char SMB_RX_byte(unsigned char ack_nack)
 		}
 	}
 
-	SMB_send_bit(ack_nack);							// Sends acknowledgment bit
+	SMB_send_bit(ack_nack);					// Sends acknowledgment bit
 
 	return RX_buffer;
 }
@@ -196,11 +197,11 @@ unsigned char PEC_calculation(unsigned char pec[]) // CRC calculation
       crc[2]=0;
       crc[1]=0x01;
       crc[0]=0x07;
-      BitPosition=47;         /* Set maximum bit position at 47 */
+      BitPosition=47;      /* Set maximum bit position at 47 */
       shift=0;
 
       //Find first 1 in the transmited message
-      i=5;               /* Set highest index */
+      i=5;                 /* Set highest index */
       j=0;
       while((pec[i]&(0x80>>j))==0 && i>0)
       {
