@@ -16,5 +16,5 @@
 
 #use delay(clock=4000000)
 #use rs232(baud=2400,parity=N,xmit=PIN_B5,rcv=PIN_B2,bits=8)//,FORCE_SW)
-#use i2c(MASTER,SLOW,sda=PIN_B1,scl=PIN_B0,SMBUS)
+//#use i2c(MASTER,SLOW,sda=PIN_B1,scl=PIN_B0,SMBUS)
 

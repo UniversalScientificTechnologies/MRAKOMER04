@@ -3,14 +3,13 @@
 #define ID "$Id: irmrak3.c 1215 2008-08-08 12:25:25Z kakl $"
 #include "irmrak4.h"
 
+#define  MAXHEAT        10       // Number of cycles for heating
+#define  MAXOPEN        10       // Number of cycles for dome open
+#define  MEASURE_DELAY  10000
+#define  SEND_DELAY     50
+
 #define  DOME        PIN_B4   // Dome controll port
-#define  SA          0x00     // Slave Address (0 for single slave / 0x5A<<1 default)
-#define  RAM_Access  0x00     // RAM access command
-#define  RAM_Tobj1   0x07     // To1 address in the eeprom
-#define  RAM_Tamb    0x06     // Ta address in the eeprom
 #define  HEATING     PIN_B3   // Heating for defrosting
-#define  MAXHEAT     10       // Number of cycles for heating
-#define  MAXOPEN     10       // Number of cycles for dome open
 
 #bit CREN = 0x18.4      // USART registers
 #bit SPEN = 0x18.7
@@ -23,75 +22,25 @@ char  REV[50]=ID;
 int8  heat;
 int8  open;
 
-
-unsigned char PEC_calculation(unsigned char pec[]) // CRC calculation
+inline void toggle_dome(void)
 {
-   unsigned char   crc[6];
-   unsigned char   BitPosition=47;
-   unsigned char   shift;
-   unsigned char   i;
-   unsigned char   j;
-   unsigned char   temp;
+   if (open>0)
+      {output_toggle(DOME);}
+      else
+      {output_low(DOME);}
+}
 
-   do
-   {
-      crc[5]=0;            /* Load CRC value 0x000000000107 */
-      crc[4]=0;
-      crc[3]=0;
-      crc[2]=0;
-      crc[1]=0x01;
-      crc[0]=0x07;
-      BitPosition=47;         /* Set maximum bit position at 47 */
-      shift=0;
+void delay(int16 cycles)
+{
+   int16 i;
+   
+   for(i=0; i<cycles; i++) {toggle_dome(); delay_us(100);}
 
-      //Find first 1 in the transmited message
-      i=5;               /* Set highest index */
-      j=0;
-      while((pec[i]&(0x80>>j))==0 && i>0)
-      {
-         BitPosition--;
-         if(j<7)
-         {
-            j++;
-         }
-         else
-         {
-            j=0x00;
-            i--;
-         }
-      }/*End of while */
-
-      shift=BitPosition-8;   /*Get shift value for crc value*/
+   restart_wdt();
+}
 
 
-      //Shift crc value
-      while(shift)
-      {
-         for(i=5; i<0xFF; i--)
-         {
-            if((crc[i-1]&0x80) && (i>0))
-            {
-               temp=1;
-            }
-            else
-            {
-               temp=0;
-            }
-            crc[i]<<=1;
-            crc[i]+=temp;
-         }/*End of for*/
-         shift--;
-      }/*End of while*/
-
-      //Exclusive OR between pec and crc
-      for(i=0; i<=5; i++)
-      {
-         pec[i] ^=crc[i];
-      }/*End of for*/
-   } while(BitPosition>8);/*End of do-while*/
-
-   return pec[0];
-}/*End of PEC_calculation*/
+#include "smb.c"
 
 
 int16 ReadTemp(int8 addr, int8 select)    // Read sensor RAM
@@ -100,19 +49,19 @@ int16 ReadTemp(int8 addr, int8 select)    // Read sensor RAM
    int8 crc;                     // Readed CRC
    int16 temp;                   // Readed temperature
 
-   disable_interrupts(GLOBAL);
-   i2c_stop();
-   i2c_start();
-   i2c_write(addr);
-   i2c_write(RAM_Access|select);  // Select the teperature sensor in device
-   i2c_start();
-   i2c_write(addr);
-   arr[2]=i2c_read(1);        // lo
-   arr[1]=i2c_read(1);        // hi
+   addr<<=1;
+
+   SMB_STOP_bit();             //If slave send NACK stop comunication
+   SMB_START_bit();            //Start condition
+   SMB_TX_byte(addr);
+   SMB_TX_byte(RAM_Access|select);
+   SMB_START_bit();            //Repeated Start condition
+   SMB_TX_byte(addr);
+   arr[2]=SMB_RX_byte(ACK);        //Read low data,master must send ACK
+   arr[1]=SMB_RX_byte(ACK);     //Read high data,master must send ACK
    temp=MAKE16(arr[1],arr[2]);
-   crc=i2c_read(0);           //crc
-   i2c_stop();
-   enable_interrupts(GLOBAL);
+   crc=SMB_RX_byte(NACK);         //Read PEC byte, master must send NACK
+   SMB_STOP_bit();             //Stop condition
 
    arr[5]=addr;
    arr[4]=RAM_Access|select;
@@ -121,18 +70,6 @@ int16 ReadTemp(int8 addr, int8 select)    // Read sensor RAM
    if (crc != PEC_calculation(arr)) temp=0; // Calculate and check CRC
 
    return temp;
-}
-
-void delay(int16 cycles)
-{
-   int16 i;
-   
-   if (open>0)
-      for(i=0; i<cycles; i++) {output_toggle(DOME); delay_us(100);}
-      else
-      for(i=0; i<cycles; i++) {output_low(DOME); delay_us(100);}      
-
-      restart_wdt();
 }
 
 void main()
@@ -176,7 +113,7 @@ void main()
 
       do 
       {
-         delay(10000);
+         delay(MEASURE_DELAY);
          if (heat>0)
             {
                output_high(HEATING);
@@ -224,15 +161,15 @@ void main()
       to=temp*2-27315;
 
       { // printf
-         char output[30];
-         int8 j;
+         char output[30];  // Output buffer
+         int8 j;           // Counter
                
          sprintf(output,"#%Lu %Ld %Ld %u %u\n\r\0", n, ta, to, heat, open);
    
          j=0;
          while(output[j]!=0)
          {
-            delay(50);
+            delay(SEND_DELAY);
             putc(output[j++]);
             output_toggle(DOME);
          }
