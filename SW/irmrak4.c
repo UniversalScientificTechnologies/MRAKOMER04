@@ -33,7 +33,7 @@ inline void toggle_dome(void)
 void delay(int16 cycles)
 {
    int16 i;
-   
+
    for(i=0; i<cycles; i++) {toggle_dome(); delay_us(100);}
 
    restart_wdt();
@@ -93,7 +93,7 @@ void main()
    restart_wdt();
    printf("\n\r* Mrakomer %s (C) 2007 KAKL *\n\r",VER);   // Welcome message
    printf("* %s *\n\r",REV);
-   printf("<#seq.> <ambient temp.> <space temp.> <status>\n\r\n\r");
+   printf("<#seq.> <ambient temp.> <space temp.> <heating> <dome>\n\r\n\r");
    tempa=ReadTemp(SA, RAM_Tamb);       // Dummy read
    temp=ReadTemp(SA, RAM_Tobj1);
 
@@ -111,13 +111,13 @@ void main()
       while(kbhit()) getc();        // Flush USART buffer
       CREN=0; CREN=1;               // Reinitialise USART
 
-      do 
+      do
       {
          delay(MEASURE_DELAY);
          if (heat>0)
             {
                output_high(HEATING);
-               heat--;          
+               heat--;
             }
             else
             {
@@ -129,23 +129,23 @@ void main()
 
       {
          char ch;
-               
+
          ch=getc();
-         
+
          switch (ch)
          {
             case 'h':
                heat=MAXHEAT;           // Needs heating
                break;
-      
+
             case 'c':
                heat=0;                 // Needs colder
                break;
-      
+
             case 'o':
                open=MAXOPEN;           // Open the dome
                break;
-      
+
             case 'l':
                open=0;                 // Lock the dome
                break;
@@ -163,9 +163,9 @@ void main()
       { // printf
          char output[30];  // Output buffer
          int8 j;           // Counter
-               
+
          sprintf(output,"#%Lu %Ld %Ld %u %u\n\r\0", n, ta, to, heat, open);
-   
+
          j=0;
          while(output[j]!=0)
          {
