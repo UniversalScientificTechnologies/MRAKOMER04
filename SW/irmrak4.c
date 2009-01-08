@@ -114,6 +114,7 @@ void main()
    tempa=ReadTemp(SA, RAM_Tamb);       // Dummy read
    temp=ReadTemp(SA, RAM_Tobj1);
 
+   delay_ms(1000);
 //---WDT
    restart_wdt();
 
