@@ -3,6 +3,8 @@
 #define ID "$Id$"
 #include "irmrak4.h"
 
+#CASE    // Case sensitive compiler
+
 #define  MAXHEAT        20       // Number of cycles for heating
 #define  MAXOPEN        20       // Number of cycles for dome open
 #define  MEASURE_DELAY  6000     // Delay to a next measurement
@@ -69,7 +71,7 @@ int16 ReadTemp(int8 addr, int8 select)
    SMB_TX_byte(addr);
    arr[2]=SMB_RX_byte(ACK);      //Read low data,master must send ACK
    arr[1]=SMB_RX_byte(ACK);      //Read high data,master must send ACK
-   temp=MAKE16(arr[1],arr[2]);
+   temp=make16(arr[1],arr[2]);
    crc=SMB_RX_byte(NACK);        //Read PEC byte, master must send NACK
    SMB_STOP_bit();               //Stop condition
 
@@ -110,7 +112,7 @@ void main()
    heat=0;
    open=0;
    repeat=FALSE;
-   
+
    welcome();
 
    tempa=ReadTemp(SA, RAM_Tamb);       // Dummy read
@@ -210,8 +212,8 @@ void main()
          sprintf(output,"%u\n\r\0", open);
          j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
       }
-      
-      if(heating>0) { output_high(HEATING); } else { output_low(HEATING); }
+
+      if(heat>0) { output_high(HEATING); } else { output_low(HEATING); }
 
       delay(MEASURE_DELAY);   // Delay to a next measurement
 //---WDT
