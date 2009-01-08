@@ -88,6 +88,7 @@ void main()
    unsigned int16 seq, temp, tempa;
    signed int16 ta, to;
    int8 safety_counter;
+   int1 repeat;
 
    output_high(DOME);                   // Close Dome
    output_low(HEATING);                 // Heating off
@@ -108,7 +109,8 @@ void main()
    seq=0;         // Variables initiation
    heat=0;
    open=0;
-
+   repeat=FALSE;
+   
    welcome();
 
    tempa=ReadTemp(SA, RAM_Tamb);       // Dummy read
@@ -120,9 +122,6 @@ void main()
 
    while(TRUE)    // Main Loop
    {
-      while(kbhit()) getc();        // Flush USART buffer
-      CREN=0; CREN=1;               // Reinitialise USART
-
       safety_counter=SAFETY_COUNT;  // Heating and Dome  Count Down
       do
       {
@@ -132,30 +131,21 @@ void main()
 
          if (safety_counter>=SAFETY_COUNT)
          {
-            if (heat>0)
-               {
-                  output_high(HEATING);
-                  heat--;
-               }
-               else
-               {
-                  output_low(HEATING);
-               }
-
+            if (heat>0) heat--;
             if (open>0) open--;
 
             safety_counter=0;
 //---WDT
             restart_wdt();
          }
-      } while (!kbhit());
+      } while (!kbhit()&&!repeat);
 
 //---WDT
       restart_wdt();
       {                 // Retrieve command
-         char ch;
+         char ch='k';
 
-         ch=getc();
+         if(kbhit()) ch=getc();
 
          switch (ch)
          {
@@ -183,8 +173,18 @@ void main()
             case 'i':
                if (open==0) welcome(); // Information about version, etc...
                break;                  // Only when dome is closed
+
+            case 'r':
+               repeat=TRUE;            // Repeate measure mode
+               break;
+
+            case 's':
+               repeat=FALSE;            // Single measure mode
+               break;
          }
       }
+//      while(kbhit()) getc();        // Flush USART buffer
+      CREN=0; CREN=1;               // Reinitialise USART
 
       seq++;        // Increment the number of measurement
 
@@ -210,6 +210,8 @@ void main()
          sprintf(output,"%u\n\r\0", open);
          j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
       }
+      
+      if(heating>0) { output_high(HEATING); } else { output_low(HEATING); }
 
       delay(MEASURE_DELAY);   // Delay to a next measurement
 //---WDT
