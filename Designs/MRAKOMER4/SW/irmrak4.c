@@ -111,7 +111,7 @@ void main()
    seq=0;         // Variables initiation
    heat=0;
    open=0;
-   repeat=FALSE;
+   repeat=TRUE;
 
    welcome();
 
