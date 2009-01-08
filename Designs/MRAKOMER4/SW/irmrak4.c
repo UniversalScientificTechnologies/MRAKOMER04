@@ -27,9 +27,9 @@ int8  open;
 inline void toggle_dome(void)    // Wire exercise
 {
    if (open>0)
-      {output_toggle(DOME);}
-      else
-      {output_low(DOME);}
+   {output_toggle(DOME);}  // Toggle = Open Dome
+   else
+   {output_high(DOME);}    // Do not toggle = Close Dome
 }
 
 void delay(int16 cycles)         // Wire exercise with delay
@@ -89,7 +89,7 @@ void main()
    signed int16 ta, to;
    int8 safety_counter;
 
-   output_low(DOME);                    // Close Dome
+   output_high(DOME);                   // Close Dome
    output_low(HEATING);                 // Heating off
    setup_wdt(WDT_2304MS);               // Setup Watch Dog
    setup_adc_ports(NO_ANALOGS);
@@ -105,14 +105,14 @@ void main()
    delay_ms(1000);
    restart_wdt();
 
-   welcome();
-   
-   tempa=ReadTemp(SA, RAM_Tamb);       // Dummy read
-   temp=ReadTemp(SA, RAM_Tobj1);
-
    seq=0;         // Variables initiation
    heat=0;
    open=0;
+
+   welcome();
+
+   tempa=ReadTemp(SA, RAM_Tamb);       // Dummy read
+   temp=ReadTemp(SA, RAM_Tobj1);
 
 //---WDT
    restart_wdt();
@@ -148,7 +148,7 @@ void main()
             restart_wdt();
          }
       } while (!kbhit());
-      
+
 //---WDT
       restart_wdt();
       {                 // Retrieve command
