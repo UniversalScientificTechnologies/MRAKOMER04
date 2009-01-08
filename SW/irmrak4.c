@@ -136,6 +136,8 @@ void main()
             if (heat>0) heat--;
             if (open>0) open--;
 
+            if (heat>0) { output_high(HEATING); } else { output_low(HEATING); }
+
             safety_counter=0;
 //---WDT
             restart_wdt();
@@ -212,8 +214,6 @@ void main()
          sprintf(output,"%u\n\r\0", open);
          j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
       }
-
-      if(heat>0) { output_high(HEATING); } else { output_low(HEATING); }
 
       delay(MEASURE_DELAY);   // Delay to a next measurement
 //---WDT
