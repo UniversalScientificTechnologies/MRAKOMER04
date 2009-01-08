@@ -5,9 +5,9 @@
 
 #define  MAXHEAT        20       // Number of cycles for heating
 #define  MAXOPEN        20       // Number of cycles for dome open
-#define  MEASURE_DELAY  10000    // Delay to a next measurement
+#define  MEASURE_DELAY  6000     // Delay to a next measurement
 #define  RESPONSE_DELAY 100      // Reaction time after receiving a command
-#define  SAFETY_COUNT   100      // Time of one emergency cycle
+#define  SAFETY_COUNT   90       // Time of one emergency cycle
 #define  SEND_DELAY     50       // Time between two characters on RS232
 
 #define  DOME        PIN_B4   // Dome controll port
@@ -181,8 +181,8 @@ void main()
                break;
 
             case 'i':
-               welcome();              // Information about version, etc...
-               break;
+               if (open==0) welcome(); // Information about version, etc...
+               break;                  // Only when dome is closed
          }
       }
 
