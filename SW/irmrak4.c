@@ -179,7 +179,7 @@ void main()
                break;                  // Only when dome is closed
 
             case 'r':
-               repeat=TRUE;            // Repeate measure mode
+               repeat=TRUE;            // Repeated measure mode
                break;
 
             case 's':
