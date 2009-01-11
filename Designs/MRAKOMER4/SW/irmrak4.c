@@ -1,7 +1,16 @@
 /**** IR Mrakomer 4 ****/
 #define VERSION "4.0"
 #define ID "$Id$"
+
 #include "irmrak4.h"
+
+#bit CREN = 0x18.4      // USART registers
+#bit SPEN = 0x18.7
+#bit OERR = 0x18.1
+#bit FERR = 0x18.2
+
+#include <string.h>
+#include "bloader.c"             // Boot Loader driver
 
 #CASE    // Case sensitive compiler
 
@@ -15,13 +24,8 @@
 #define  DOME        PIN_B4   // Dome controll port
 #define  HEATING     PIN_B3   // Heating for defrosting
 
-#bit CREN = 0x18.4      // USART registers
-#bit SPEN = 0x18.7
-#bit OERR = 0x18.1
-#bit FERR = 0x18.2
 
 char  VER[4]=VERSION;   // Buffer for concatenate of a version string
-char  REV[50]=ID;
 
 int8  heat;    // Status variables
 int8  open;
@@ -43,17 +47,20 @@ void delay(int16 cycles)         // Wire exercise with delay
 
 void welcome(void)               // Welcome message
 {
-   printf("\n\r* Mrakomer %s (C) 2007 KAKL *\n\r",VER);   // Welcome message
-   printf("* %s *\n\r",REV);
-   printf("<#sequence> <ambient [1/100 C]> <sky [1/100 C]> ");
-   printf("<heating [s]> <dome [s]>\n\r\n\r");
+   char  REV[50]=ID;       // Buffer for concatenate of a version string
+
+   if (REV[strlen(REV)-1]=='$') REV[strlen(REV)-1]=0;
+   printf("\n\r# Mrakomer %s (C) 2007 KAKL\n\r",VER);   // Welcome message
+   printf("#%s\n\r",&REV[4]);
+   printf("# <sequence> <ambient[1/100 C]> <sky[1/100 C]> ");
+   printf("<heating[s]> <dome[s]> <check>\n\r\n\r");
 }
 
 
 #include "smb.c"                 // System Management Bus driver
 
 
-// Read sensor RAM
+// Read sensor's RAM
 // Returns temperature in °K
 int16 ReadTemp(int8 addr, int8 select)
 {
@@ -185,6 +192,9 @@ void main()
             case 's':
                repeat=FALSE;            // Single measure mode
                break;
+
+            case 'u':
+               load_program();          // Update firmware
          }
       }
 //      while(kbhit()) getc();        // Flush USART buffer
@@ -201,18 +211,26 @@ void main()
       { // printf
          char output[8];   // Output buffer
          int8 j;           // String pointer
+         int8 check=0;     // Checksum is calculated between '$' and '*'
 
          delay(SEND_DELAY);
-         sprintf(output,"#%Lu ", seq);
-         j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
+         putc('$');
+         delay(SEND_DELAY);
+         sprintf(output,"M%s ",VER);
+         j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j]); check^=output[j++]; }
+         sprintf(output,"%Lu ", seq);
+         j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j]); check^=output[j++]; }
          sprintf(output,"%Ld ", ta);
-         j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
+         j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j]); check^=output[j++]; }
          sprintf(output,"%Ld ", to);
-         j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
+         j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j]); check^=output[j++]; }
          sprintf(output,"%u ", heat);
+         j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j]); check^=output[j++]; }
+         sprintf(output,"%u ", open);
+         j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j]); check^=output[j++]; }
+         sprintf(output,"*%X\n\r\0", check);
          j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
-         sprintf(output,"%u\n\r\0", open);
-         j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
+         delay(SEND_DELAY);
       }
 
       delay(MEASURE_DELAY);   // Delay to a next measurement
@@ -220,4 +238,3 @@ void main()
       restart_wdt();
    }
 }
-
