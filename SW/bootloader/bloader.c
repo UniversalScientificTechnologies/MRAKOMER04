@@ -1,6 +1,6 @@
 /**** Bootloader ****/
 #define VERSION "1.0"
-#define ID "$Id: irmrak4.c 1293 2009-01-11 22:53:46Z kakl $"
+#define ID "$Id$"
 
 #CASE    // Case sensitive compiler
 
