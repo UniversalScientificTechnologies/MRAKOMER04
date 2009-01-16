@@ -15,7 +15,7 @@
 #INT_RDA
 rs232_handler()
 {
-   putchar(getc());   
+   putchar(getc());
 }
 
 
@@ -43,7 +43,7 @@ void real_main()
 #if FLASH_BLOCK_SIZE != getenv("FLASH_ERASE_SIZE")/2
   #error Wrong length of the Flash Block Size. getenv("FLASH_ERASE_SIZE")/getenv("FLASH_WRITE_SIZE")
 #endif
-   
+
 
 #BUILD(INTERRUPT=FLASH_BLOCK_SIZE)   // Redirect Interrupt routine above first flash block
 #ORG 4,5
@@ -54,7 +54,7 @@ void JumpToTheInterrupt()     // Jump to the Interrupt Handler
 
 #ORG LOADER_RESERVED,LOADER_RESERVED+FLASH_BLOCK_SIZE-1 auto=0
 #SEPARATE
-void dumy_main() // Main on the fix position
+void dummy_main() // Main on the fix position
 {
    real_main();
 }
@@ -169,19 +169,19 @@ boot_loader()
          if (line_type == 0)
          {
             // Read old program memory content
-            for (i=0,next_addr=addr;i<8;i++)  
+            for (i=0,next_addr=addr;i<8;i++)
                data.i16[i]=read_program_eeprom(next_addr++);
             // Loops through all of the data and stores it in data
             // The last 2 bytes are the check sum, hence buffidx-3
             for (i=8,dataidx=0; i < buffidx-3; i += 2)
                data.i8[dataidx++]=atoi_b16(&buffer[i]);
 
-            if (addr == 0) 
+            if (addr == 0)
             {
-               
+
                // Write 8 words to the Loader location
                addr=LOADER_RESERVED;
-               for (i=0;i<8;i++) 
+               for (i=0;i<8;i++)
                  write_program_eeprom(addr++, data.i16[i]);
                putchar('%');
             }
@@ -240,6 +240,6 @@ void main()
 
    CREN=0; CREN=1;   // Reinitialise USART
    restart_wdt();
-   goto_address(LOADER_RESERVED); // Jump to the location where is the jump to the main 
+   goto_address(LOADER_RESERVED); // Jump to the location where is the jump to the main
 }
-   
+
