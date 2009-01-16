@@ -1,0 +1,45 @@
+[PROJECT]
+Target=main.HEX
+Development_Mode=
+Processor=0x688F
+ToolSuite=CCS
+Processor_Text=PIC16F88
+
+[Directories]
+Include=C:\Program Files\PICC\devices\;C:\Program Files\PICC\dr
+Library=
+LinkerScript=
+
+[Target Data]
+FileList=C:\Dokumenty\MLAB\Designs\MRAKOMER4\SW\bootloader\bloader.c
+BuildTool=C-COMPILER
+OptionString=+FM
+AdditionalOptionString=
+BuildRequired=1
+
+[main.c]
+Type=4
+Path=
+FileList=
+BuildTool=
+OptionString=
+AdditionalOptionString=
+
+[mru-list]
+1=main.c
+
+[Windows]
+0=0000 main.c 0 0 796 451 3 0
+
+[Opened Files]
+1=C:\Dokumenty\MLAB\Designs\MRAKOMER4\SW\bootloader\bloader.c
+2=C:\Dokumenty\MLAB\Designs\MRAKOMER4\SW\bootloader\bloader.h
+3=C:\Program Files\PICC\devices\16F88.h
+4=C:\Dokumenty\MLAB\Designs\MRAKOMER4\SW\bootloader\bloader.lst
+5=
+6=
+7=
+8=
+[Units]
+Count=1
+1=C:\Dokumenty\MLAB\Designs\MRAKOMER4\SW\bootloader\bloader.c (main)
