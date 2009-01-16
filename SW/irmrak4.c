@@ -10,7 +10,7 @@
 #bit FERR = 0x18.2
 
 #include <string.h>
-#include "bloader.c"             // Boot Loader driver
+//!!! #include "bloader.c"             // Boot Loader driver
 
 #CASE    // Case sensitive compiler
 
@@ -91,8 +91,9 @@ int16 ReadTemp(int8 addr, int8 select)
    return temp;
 }
 
-/*-----------------------------------------------------------------------*/
-void main()
+
+/*-------------------------------- MAIN --------------------------------------*/
+void real_main()
 {
    unsigned int16 seq, temp, tempa;
    signed int16 ta, to;
@@ -101,16 +102,6 @@ void main()
 
    output_high(DOME);                   // Close Dome
    output_low(HEATING);                 // Heating off
-   setup_wdt(WDT_2304MS);               // Setup Watch Dog
-   setup_adc_ports(NO_ANALOGS);
-   setup_adc(ADC_OFF);
-   setup_timer_0(RTCC_INTERNAL|RTCC_DIV_1);
-   setup_timer_1(T1_DISABLED);
-   setup_timer_2(T2_DISABLED,0,1);
-   setup_comparator(NC_NC_NC_NC);
-   setup_vref(FALSE);
-//   setup_oscillator(OSC_4MHZ|OSC_INTRC,+2); // Pokud je nutna kalibrace RCosc
-   setup_oscillator(OSC_8MHZ|OSC_INTRC);
 
    delay_ms(1000);
    restart_wdt();
@@ -194,7 +185,7 @@ void main()
                break;
 
             case 'u':
-               load_program();          // Update firmware
+//               load_program();          // Update firmware
          }
       }
 //      while(kbhit()) getc();        // Flush USART buffer
@@ -238,3 +229,165 @@ void main()
       restart_wdt();
    }
 }
+
+
+/*------------------- BOOT LOADER --------------------------------------------*/
+#define LOADER_RESERVED    getenv("PROGRAM_MEMORY")-getenv("FLASH_ERASE_SIZE")-800
+#define BUFFER_LEN_LOD     46
+
+#ORG LOADER_RESERVED,getenv("PROGRAM_MEMORY")-201 auto=0 default
+
+unsigned int atoi_b16(char *s) {  // Convert two hex characters to a int8
+   unsigned int result = 0;
+   int i;
+
+   for (i=0; i<2; i++,s++)  {
+      if (*s >= 'A')
+         result = 16*result + (*s) - 'A' + 10;
+      else
+         result = 16*result + (*s) - '0';
+   }
+
+   return(result);
+}
+
+void assert(int1 Condition, int8 ErrorCode)
+{
+   if(Condition)
+   {
+      putchar('E');
+      putchar(ErrorCode+'1');
+      reset_cpu();
+   }
+}
+
+void pause()
+{
+   int16 timeout;
+
+   for(timeout=0; timeout<65535; timeout++); // Delay cca 300ms
+}
+
+boot_loader()
+{
+   int  buffidx;
+   char buffer[BUFFER_LEN_LOD];
+
+   int8  checksum, line_type;
+   int16 l_addr,h_addr=0;
+   int32 addr;
+   #if getenv("FLASH_ERASE_SIZE")>2
+      int32 next_addr;
+   #endif
+
+//!!! #error ble getenv("FLASH_ERASE_SIZE") getenv("FLASH_WRITE_SIZE")
+
+   int8  dataidx, i, count;
+   union program_data {
+      int8  i8[16];
+      int16 i16[8];
+   } data;
+
+   putchar('@');
+
+//!!!nesmaze obsluhu preruseni
+   for(i=getenv("FLASH_ERASE_SIZE")+1;i<LOADER_RESERVED;i+=getenv("FLASH_ERASE_SIZE"))
+     erase_program_eeprom(i);
+
+   putchar('@');
+
+   while(TRUE)
+   {
+//---WDT
+//!!! musi fungovat watchdog
+      while (getc()!=':') restart_wdt(); // Only process data blocks that starts with ':'
+
+      buffidx = 0;  // Read into the buffer until 'x' is received or buffer is full
+      do
+      {
+         buffer[buffidx] = getc();
+      } while ( (buffer[buffidx++] != 'x') && (buffidx < BUFFER_LEN_LOD) );
+      assert(buffidx == BUFFER_LEN_LOD,1); // Overrun buffer?
+
+//---WDT
+      restart_wdt();
+
+      checksum = 0;  // Sum the bytes to find the check sum value
+      for (i=0; i<(buffidx-3); i+=2)
+         checksum += atoi_b16 (&buffer[i]);
+      checksum = 0xFF - checksum + 1;
+      assert(checksum != atoi_b16 (&buffer[buffidx-3]),2); // Bad CheckSum?
+
+      count = atoi_b16 (&buffer[0]);  // Get the number of bytes from the buffer
+
+      // Get the lower 16 bits of address
+      l_addr = make16(atoi_b16(&buffer[2]),atoi_b16(&buffer[4]));
+
+      line_type = atoi_b16 (&buffer[6]);
+
+      addr = make32(h_addr,l_addr);
+
+      addr /= 2;        // PIC16 uses word addresses
+
+      // If the line type is 1, then data is done being sent
+      if (line_type == 1)
+      {
+         putchar('#');
+         reset_cpu();
+      }
+
+      assert (line_type == 4,4);
+
+
+//!!! pozor, nevypalilo by to obsluhu preruseni
+      if (addr > 3 || addr < LOADER_RESERVED)
+      {
+
+         if (line_type == 0)
+         {
+            for (i=0,next_addr=addr;i<8;i++)
+               data.i16[i]=read_program_eeprom(next_addr++);
+            // Loops through all of the data and stores it in data
+            // The last 2 bytes are the check sum, hence buffidx-3
+            for (i=8,dataidx=0; i < buffidx-3; i += 2)
+               data.i8[dataidx++]=atoi_b16(&buffer[i]);
+
+               write_program_memory(addr, data.i8, count);
+         }
+putchar('*');
+      }
+   }
+}
+
+#ORG default
+
+#ORG getenv("PROGRAM_MEMORY")-200,getenv("PROGRAM_MEMORY")-1
+void main()
+{
+   int8  timeout;
+
+   disable_interrupts(GLOBAL);
+   setup_wdt(WDT_2304MS);               // Setup Watch Dog
+   setup_adc_ports(NO_ANALOGS);
+   setup_adc(ADC_OFF);
+   setup_timer_0(RTCC_INTERNAL|RTCC_DIV_1);
+   setup_timer_1(T1_DISABLED);
+   setup_timer_2(T2_DISABLED,0,1);
+   setup_comparator(NC_NC_NC_NC);
+   setup_vref(FALSE);
+   setup_oscillator(OSC_8MHZ|OSC_INTRC);
+
+/*
+   for(timeout=0; timeout<(3*20); timeout++) //cca 20s
+    if (kbhit())
+    {
+      if (getc()=='u') if (getc()=='f') boot_loader(); // Update Firmware starter
+      pause();
+      CREN=0; CREN=1;
+      restart_wdt();
+    };
+*/
+   real_main();
+}
+
+#include "dbloader.c"
