@@ -63,6 +63,8 @@ void welcome(void)               // Welcome message
    printf("#\n\r");
    printf("# <sequence> <ambient[1/100 C]> <sky[1/100 C]> ");
    printf("<heating[s]> <dome[s]> <check>\n\r\n\r");
+//---WDT
+   restart_wdt();
 }
 
 
@@ -121,8 +123,6 @@ void main()
    repeat=TRUE;
 
    welcome();
-//---WDT
-   restart_wdt();
 
    tempa=ReadTemp(SA, RAM_Tamb);       // Dummy read
    temp=ReadTemp(SA, RAM_Tobj1);
