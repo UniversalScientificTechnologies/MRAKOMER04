@@ -14,10 +14,9 @@ void JumpToTheInterrupt()     // Jump to the Interrupt Handler
 #ORG 6,FLASH_BLOCK_SIZE-1 {} // First Flash block is reserved
 
 
-#ORG LOADER_RESERVED,getenv("PROGRAM_MEMORY")-12 auto=0
+#ORG LOADER_RESERVED,getenv("PROGRAM_MEMORY")-1 auto=0
 #SEPARATE
 void dummy_main() // Main on the fix position
 {
    reset_cpu();
 }
-
