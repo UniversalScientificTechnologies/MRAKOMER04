@@ -51,6 +51,16 @@ void welcome(void)               // Welcome message
    if (REV[strlen(REV)-1]=='$') REV[strlen(REV)-1]=0;
    printf("\n\r# Mrakomer %s (C) 2007 KAKL\n\r",VER);   // Welcome message
    printf("#%s\n\r",&REV[4]);
+   printf("# h - Switch on heating for 20s.\n\r");
+   printf("# c - Need Colder. Switch off heating.\n\r");
+   printf("# o - Open the Dome for 20s.\n\r");
+   printf("# l - Lock the dome.\n\r");
+   printf("# x - Open the Dome and switch on heating.\n\r");
+   printf("# i - Print this Information.\n\r");
+   printf("# r - Repeat measure every second.\n\r");
+   printf("# s - Single measure mode on demand.\n\r");
+   printf("# U - Update firmware. Go to the Boot Loader.\n\r");
+   printf("#\n\r");
    printf("# <sequence> <ambient[1/100 C]> <sky[1/100 C]> ");
    printf("<heating[s]> <dome[s]> <check>\n\r\n\r");
 }
