@@ -49,13 +49,14 @@ void welcome(void)               // Welcome message
    char  REV[50]=ID;       // Buffer for concatenate of a version string
 
    if (REV[strlen(REV)-1]=='$') REV[strlen(REV)-1]=0;
-   printf("\n\r# Mrakomer %s (C) 2007 KAKL\n\r",VER);   // Welcome message
+   printf("\n\r\n\r# Mrakomer %s (C) 2007 KAKL\n\r",VER);   // Welcome message
    printf("#%s\n\r",&REV[4]);
-   printf("# h - Switch on heating for 20s.\n\r");
-   printf("# c - Need Colder. Switch off heating.\n\r");
+   printf("#\n\r");
+   printf("# h - Switch On Heating for 20s.\n\r");
+   printf("# c - Need Colder. Switch Off Heating.\n\r");
    printf("# o - Open the Dome for 20s.\n\r");
    printf("# l - Lock the dome.\n\r");
-   printf("# x - Open the Dome and switch on heating.\n\r");
+   printf("# x - Open the Dome and switch On Heating.\n\r");
    printf("# i - Print this Information.\n\r");
    printf("# r - Repeat measure every second.\n\r");
    printf("# s - Single measure mode on demand.\n\r");
