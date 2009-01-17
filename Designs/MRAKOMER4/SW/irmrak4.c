@@ -59,7 +59,7 @@ void welcome(void)               // Welcome message
    printf("# i - Print this Information.\n\r");
    printf("# r - Repeat measure every second.\n\r");
    printf("# s - Single measure mode on demand.\n\r");
-   printf("# U - Update firmware. Go to the Boot Loader.\n\r");
+   printf("# u - Update firmware. Go to the Boot Loader.\n\r");
    printf("#\n\r");
    printf("# <sequence> <ambient[1/100 C]> <sky[1/100 C]> ");
    printf("<heating[s]> <dome[s]> <check>\n\r\n\r");
@@ -121,6 +121,8 @@ void main()
    repeat=TRUE;
 
    welcome();
+//---WDT
+   restart_wdt();
 
    tempa=ReadTemp(SA, RAM_Tamb);       // Dummy read
    temp=ReadTemp(SA, RAM_Tobj1);
