@@ -1,10 +1,11 @@
-/**** Bootloader ****/
+/**** BootLoader ****/
 #define VERSION "1.0"
 #define ID "$Id$"
 
 #CASE    // Case sensitive compiler
 
 #include "bloader.h"
+#include <string.h>
 
 #bit CREN = 0x18.4      // USART registers
 #bit SPEN = 0x18.7
@@ -18,6 +19,16 @@ rs232_handler()
    putchar(getc());
 }
 
+void welcome(void)               // Welcome message
+{
+   char  REV[50]=ID;       // Buffer for concatenate of a version string
+   char  VER[4]=VERSION;   // Buffer for concatenate of a version string
+
+   if (REV[strlen(REV)-1]=='$') REV[strlen(REV)-1]=0;
+   printf("\n\r\n\r# BLoader %s (C) 2007 KAKL\n\r",VER);   // Welcome message
+   printf("#%s\n\r",&REV[4]);
+}
+
 
 /*-------------------------------- MAIN --------------------------------------*/
 #SEPARATE
@@ -25,12 +36,14 @@ void real_main()
 {
    int8 i=0;
 
-   printf("/n/rBootloader/n/r");
+   welcome();
+
+   printf("# Boot Loader Test >>>\n\r# ");
    enable_interrupts(INT_RDA);
    enable_interrupts(GLOBAL);
    while(TRUE)
    {
-      printf("|%u",i++);
+      printf("%u|",i++);
       delay_ms(100);
    }
 }
@@ -59,7 +72,7 @@ void dummy_main() // Main on the fix position
    real_main();
 }
 
-#ORG LOADER_RESERVED+FLASH_BLOCK_SIZE,getenv("PROGRAM_MEMORY")-125 auto=0 default
+#ORG LOADER_RESERVED+FLASH_BLOCK_SIZE,getenv("PROGRAM_MEMORY")-130 auto=0 default
 
 unsigned int atoi_b16(char *s)  // Convert two hex characters to an int8
 {
@@ -128,11 +141,11 @@ boot_loader()
 //---WDT
       while (getc()!=':') restart_wdt(); // Only process data blocks that starts with ':'
 
-      buffidx = 0;  // Read into the buffer until 'x' is received or buffer is full
+      buffidx = 0;  // Read into the buffer until fill is received or buffer is full
       do
       {
          buffer[buffidx] = getc();
-      } while ( (buffer[buffidx++] != 'x') && (buffidx < BUFFER_LEN_LOD) );
+      } while ( (buffer[buffidx++] < 'g') && (buffidx < BUFFER_LEN_LOD) );
       assert(buffidx == BUFFER_LEN_LOD,1); // Error 1 - Buffer Overrun
 
 //---WDT
@@ -195,8 +208,8 @@ boot_loader()
             }
             else putchar('.');
 //---WDT
-      restart_wdt();
-      CREN=0; CREN=1;
+            restart_wdt();
+            CREN=0; CREN=1;   // Reinitialise USART
          }
       }
    }
@@ -204,7 +217,7 @@ boot_loader()
 
 #ORG default
 
-#ORG getenv("PROGRAM_MEMORY")-124,getenv("PROGRAM_MEMORY")-1 auto=0
+#ORG getenv("PROGRAM_MEMORY")-129,getenv("PROGRAM_MEMORY")-1 auto=0
 void main()
 {
    int8  timeout;
@@ -220,7 +233,6 @@ void main()
    setup_vref(FALSE);
    setup_oscillator(OSC_8MHZ|OSC_INTRC);
 
-   putchar('?');
    for(timeout=0; timeout<255; timeout++) //cca 50s
    {
       if (kbhit())
@@ -233,6 +245,7 @@ void main()
           }
         }
         else break;
+      putchar('u'); putchar('f'); putchar('?');
       pause();
       CREN=0; CREN=1;   // Reinitialise USART
       restart_wdt();

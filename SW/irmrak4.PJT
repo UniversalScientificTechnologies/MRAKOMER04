@@ -37,9 +37,11 @@ AdditionalOptionString=
 3=C:\Program Files\PICC\devices\16F88.h
 4=C:\Dokumenty\MLAB\Designs\MRAKOMER4\SW\smb.c
 5=C:\Program Files\PICC_old\drivers\string.h
-6=C:\Dokumenty\MLAB\Designs\MRAKOMER4\SW\bloader.c
-7=C:\Dokumenty\MLAB\Designs\MRAKOMER4\SW\irmrak4.lst
-8=
+6=C:\Dokumenty\MLAB\Designs\MRAKOMER4\SW\irmrak4.lst
+7=C:\Program Files\PICC_old\drivers\stddef.h
+8=C:\Program Files\PICC_old\drivers\ctype.h
+9=C:\Dokumenty\MLAB\Designs\MRAKOMER4\SW\dbloader.c
+10=
 [Units]
 Count=1
 1=C:\Dokumenty\MLAB\Designs\MRAKOMER4\SW\irmrak4.c (main)
