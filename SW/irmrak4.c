@@ -55,11 +55,11 @@ void welcome(void)               // Welcome message
    printf("# h - Switch On Heating for 20s.\n\r");
    printf("# c - Need Colder. Switch Off Heating.\n\r");
    printf("# o - Open the Dome for 20s.\n\r");
-   printf("# l - Lock the dome.\n\r");
+   printf("# l - Lock the Dome.\n\r");
    printf("# x - Open the Dome and switch On Heating.\n\r");
    printf("# i - Print this Information.\n\r");
    printf("# r - Repeat measure every second.\n\r");
-   printf("# s - Single measure mode on demand.\n\r");
+   printf("# s - Single measure.\n\r");
    printf("# u - Update firmware. Go to the Boot Loader.\n\r");
    printf("#\n\r");
    printf("# <sequence> <ambient[1/100 C]> <sky[1/100 C]> ");
