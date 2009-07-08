@@ -1,0 +1,18 @@
+﻿
+//
+// This is a project description file.
+//
+
+[InfoShortDescription.en]
+Mrakoměr4 (Claudsmeter) 
+
+[InfoShortDescription.cs]
+Mrakoměr3
+  
+[InfoLongDescription.en]
+This is a device for measurement the clouds coverage. This device is especially constructed for protection of robotics telescopes against rain and snow. This is a second generation without moving parts.
+
+[InfoLongDescription.cs]
+Přístroj je navržen pro detekci kritického lokálního množství vody v atmosféře jako součást robotických dalekohledů. Tento model je druhou vylepšenou generací bez pohyblivých částí.
+
+[End]
