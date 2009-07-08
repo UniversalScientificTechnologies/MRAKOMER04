@@ -7,7 +7,7 @@
 Mrakoměr4 (Claudsmeter) 
 
 [InfoShortDescription.cs]
-Mrakoměr3
+Mrakoměr4
   
 [InfoLongDescription.en]
 This is a device for measurement the clouds coverage. This device is especially constructed for protection of robotics telescopes against rain and snow. This is a second generation without moving parts.
