@@ -1,6 +1,6 @@
 *
 *
-G04 PADS Layout (Build Number 2008.43.1) generated Gerber (RS-274-X) file*
+G04 PADS Layout (Build Number 2007.42.1) generated Gerber (RS-274-X) file*
 G04 PC Version=2.1*
 *
 %IN "USBRS232_final.pcb"*%
@@ -47,16 +47,17 @@ G04 PC Custom Aperture Macros*
 *
 G04 PC Aperture Table*
 *
-%ADD024C,0.001*%
 %ADD025C,0.01*%
 *
 *
 *
 *
-G04 PC Circuitry*
-G04 Layer Name USBRS232_final.pcb - circuitry*
+G04 PC Copper Outlines (0)*
+G04 Layer Name USBRS232_final.pcb - dark (0)*
 %LPD*%
 *
+*
+G04 PC Area=Custom_Thermal*
 *
 G04 PC Custom Flashes*
 G04 Layer Name USBRS232_final.pcb - flashes*
@@ -67,18 +68,11 @@ G04 PC Circuitry*
 G04 Layer Name USBRS232_final.pcb - circuitry*
 %LPD*%
 *
-G54D24*
 G54D25*
-G01X112400Y367900D02*
-Y112100D01*
-X277600*
-Y367900*
-X112400*
-X254300Y195500D02*
-G75*
-G03X254300I-14800J0D01*
-G01X165300Y284500D02*
-G03X165300I-14800J0D01*
-G74*
-G01X0Y0D02*
+G01X545480Y286693D02*
+Y30893D01*
+X710680*
+Y286693*
+X545480*
+X0Y0D02*
 M02*

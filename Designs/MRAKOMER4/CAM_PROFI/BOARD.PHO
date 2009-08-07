@@ -1,6 +1,6 @@
 *
 *
-G04 PADS Layout (Build Number 2008.43.1) generated Gerber (RS-274-X) file*
+G04 PADS Layout (Build Number 2007.42.1) generated Gerber (RS-274-X) file*
 G04 PC Version=2.1*
 *
 %IN "IRMRAK_final_nullvia.pc"*%
@@ -47,16 +47,17 @@ G04 PC Custom Aperture Macros*
 *
 G04 PC Aperture Table*
 *
-%ADD024C,0.001*%
 %ADD025C,0.01*%
 *
 *
 *
 *
-G04 PC Circuitry*
-G04 Layer Name IRMRAK_final_nullvia.pc - circuitry*
+G04 PC Copper Outlines (0)*
+G04 Layer Name IRMRAK_final_nullvia.pc - dark (0)*
 %LPD*%
 *
+*
+G04 PC Area=Custom_Thermal*
 *
 G04 PC Custom Flashes*
 G04 Layer Name IRMRAK_final_nullvia.pc - flashes*
@@ -67,12 +68,11 @@ G04 PC Circuitry*
 G04 Layer Name IRMRAK_final_nullvia.pc - circuitry*
 %LPD*%
 *
-G54D24*
 G54D25*
-G01X102400Y215000D02*
-Y105000D01*
-X397600*
-Y215000*
-X102400*
+G01X546667Y272395D02*
+Y162395D01*
+X841867*
+Y272395*
+X546667*
 X0Y0D02*
 M02*
