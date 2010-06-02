@@ -1,13 +1,26 @@
-\documentclass[10pt,a4paper,twoside]{article}
+\documentclass[10pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[czech]{babel}
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+\usepackage{fancyhdr}
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyfoot{}
+
 \author{Kaklik}
 \title{MRAKOMĚR}
+
+\fancyhead[C]{\begin{tabular}\hline \title nejaky text \hline \end{tabular}}
+\fancyfoot[L] {/\today / \author / www.mlab.cz}
+\fancyfoot[R]{\thepage }
+
 \begin{document}
+
+\tableofcontents
 
 \section{Why you need the MRAKOMĚR?}
 MRAKOMĚR is a cloud meter sensor suitable for protect maintenance free telescopes against rain and snow. The MRAKOMĚR function is command cupola or other telescope housing to close if MRAKOMĚR see a cloudy sky. 
@@ -15,10 +28,10 @@ MRAKOMĚR is a cloud meter sensor suitable for protect maintenance free telescop
 \section{Measuring principle}
 MRAKOMĚR act as a IR thermometer because clouds reflecting a much IR radiation. Then the measuring unit catch the reflected radiation and count it's intensity to determine how much cloudy sky is above the telescope. If a level of water vapor is over the copula is ordered to close. 
 
-\section{technical realization}
-The thermopile sensor is directed  to the zenith and integrate radiation flux over $90^/circ$angle. However there must not be any terrestrial (atmospheric  heated) object in viewing  angle because they can cause malfunction by it's IR radiation.        
+\section{Technical realization}
+The thermopile sensor is directed  to the zenith and integrate radiation flux over $90^\circ$ angle. However there must not be any terrestrial (atmospheric  heated) object in viewing  angle because they can cause malfunction by it's IR radiation.        
 
-The thermopile sensor in MRAKOMĚR  is covered by small and thin HDPE cupola which protect the senor itself against atmospheric events. The HDPE material have good transparency in IR but sometimes there can be a condensate water. As solution for this problem (condensated water is resolved as cloudy) there is a 2W heating resistor in MRAKOMĚR case which is suitable to stop water condensating on thermopile sensor housing or it can melt the accidental ice too. 
+The thermopile sensor in MRAKOMĚR  is covered by small and thin HDPE cupola which protect the senor itself against atmospheric events. The HDPE material have good transparency in IR but sometimes there can be a condensate water. As solution for this problem (condensated water is resolved as cloudy) there is a 2W heating resistor in MRAKOMĚR case which is suitable to stop water condensing on thermopile sensor housing or it can melt the accidental ice too. 
 
 MRAKOMĚR is connected to telescope computer (IBM PC ) over USB interface  board where is standard RS232 port emulated. Also there is a option of direct RS232 connection if it is desired by user. But in this mode an external power source is needed. And in addition there is an optocoupled output channel which is activated in cloudy or if the computer get frozen.
 
@@ -31,7 +44,7 @@ If MRAKOMĚR is plugged to the computer it communicate by speed 2400 baud (8N1) 
 $M4.1 2866 2383 -63 17 15 *5A
 \end{verbatim}
 
-Where MX.X is the version and revision 2866 is a number of mesuring (0 to 65535). 2383 is a temperature in sensor case (23.83$^/circ$). And -63 meaning that sky "have" -0.63$^/circ$. Last two numbers before star is number of seconds to turn off heating and to close cupola (it is reset if apppropirate command is received). After a star symbol is hexadecimal value of XOR of symbols between $ and *.
+Where MX.X is the version and revision 2866 is a number of mesuring (0 to 65535). 2383 is a temperature in sensor case (23.83 $^\circ$C). And -63 meaning that sky "has" -63 $^\circ$C. Last two numbers before star is number of seconds to turn off heating and to close cupola (it is reset if apppropirate command is received). After a star symbol is hexadecimal value of XOR of symbols between \verb+$+ and *.
 
 \begin{table}[htbp]
 \begin{center}
