@@ -51,13 +51,13 @@ void welcome(void)               // Welcome message
    if (REV[strlen(REV)-1]=='$') REV[strlen(REV)-1]=0;
    printf("\r\n\r\n# Mrakomer %s (C) 2007 UST\n\r",VER);   // Welcome message
    printf("#%s\r\n",&REV[4]);
-   printf("#\r\n");
-   printf("# commands:\r\n");
-   printf("# h_eat, c_old, o_pen, l_ock, x_open, ");
-   printf("i_nfo, r_epeat, a_uto, s_single, u_pdate\r\n");
-   printf("#\r\n");
-   printf("# <ver> <sequence> <inside[1/100 C]> <sky[1/100 C]> <sky[1/100 C]> ");
-   printf("<ambient[1/100 C]> <heating[s]> <dome[s]> <check>\r\n\r\n");
+//   printf("#\r\n");
+   printf("# commands: h, c, o, l, x, i, r, a, s, u\r\n");
+//   printf("# h_eat, c_old, o_pen, l_ock, x_open, ");
+//   printf("i_nfo, r_epeat, a_uto, s_single, u_pdate\r\n");
+//   printf("#\r\n");
+   printf("# ver sequence inside[1/100 C] sky[1/100 C] sky[1/100 C] ");
+   printf("ambient[1/100 C] heating[s] dome[s] check\r\n\r\n");
 
 //---WDT
    restart_wdt();
@@ -245,7 +245,6 @@ void main()
                reset_cpu();             // Update firmware
          }
       }
-//      while(kbhit()) getc();        // Flush USART buffer
       CREN=0; CREN=1;               // Reinitialise USART
 
       seq++;        // Increment the number of measurement

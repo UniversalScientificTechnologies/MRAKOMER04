@@ -39,8 +39,8 @@ AdditionalOptionString=
 5=..\..\..\..\..\..\..\..\Program Files\PICC\Drivers\stddef.h
 6=..\..\..\..\..\..\..\..\Program Files\PICC\Drivers\ctype.h
 7=smb.c
-8=dbloader.c
-9=TOUCH.C
+8=TOUCH.C
+9=dbloader.c
 10=
 [Units]
 Count=1
