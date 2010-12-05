@@ -1,8 +1,17 @@
 /**** BootLoader ****/
-#define VERSION "1.0"
+#define VERSION "1.1"
 #define ID "$Id$"
 
 #CASE    // Case sensitive compiler
+
+#define  FLASH_BLOCK_SIZE     32
+#define  BLOADER_MAIN_LENGTH  139  // Rezervovane misto pro main BootLoaderu
+#define  RESERVED_BLOCKS      24   // Pocet rezervovanych bloku Flash pro BootLoader
+#define  LOADER_RESERVED    getenv("PROGRAM_MEMORY")-RESERVED_BLOCKS*FLASH_BLOCK_SIZE
+#define  BUFFER_LEN_LOD       46
+#if FLASH_BLOCK_SIZE != getenv("FLASH_ERASE_SIZE")/2
+  #error Wrong length of the Flash Block Size. getenv("FLASH_ERASE_SIZE")/getenv("FLASH_WRITE_SIZE")
+#endif
 
 #include "bloader.h"
 #include <string.h>
@@ -14,7 +23,7 @@
 
 
 #INT_RDA
-rs232_handler()
+void rs232_handler()
 {
    putchar(getc());
 }
@@ -25,8 +34,8 @@ void welcome(void)               // Welcome message
    char  VER[4]=VERSION;   // Buffer for concatenate of a version string
 
    if (REV[strlen(REV)-1]=='$') REV[strlen(REV)-1]=0;
-   printf("\n\r\n\r# BLoader %s (C) 2007 KAKL\n\r",VER);   // Welcome message
-   printf("#%s\n\r",&REV[4]);
+   printf("\r\n\r\n# BLoader %s (C) 2007 KAKL\r\n",VER);   // Welcome message
+   printf("#%s\r\n",&REV[4]);
 }
 
 
@@ -38,7 +47,9 @@ void real_main()
 
    welcome();
 
-   printf("# Boot Loader Test >>>\n\r# ");
+   printf("# Reserved: %Lu\r\n", RESERVED_BLOCKS*FLASH_BLOCK_SIZE);
+   
+   printf("# Boot Loader Test >>>\r\n# ");
    enable_interrupts(INT_RDA);
    enable_interrupts(GLOBAL);
    while(TRUE)
@@ -50,13 +61,6 @@ void real_main()
 
 
 /*------------------- BOOT LOADER --------------------------------------------*/
-#define FLASH_BLOCK_SIZE   32
-#define LOADER_RESERVED    getenv("PROGRAM_MEMORY")-26*FLASH_BLOCK_SIZE
-#define BUFFER_LEN_LOD     46
-#if FLASH_BLOCK_SIZE != getenv("FLASH_ERASE_SIZE")/2
-  #error Wrong length of the Flash Block Size. getenv("FLASH_ERASE_SIZE")/getenv("FLASH_WRITE_SIZE")
-#endif
-
 
 #BUILD(INTERRUPT=FLASH_BLOCK_SIZE)   // Redirect Interrupt routine above first flash block
 #ORG 4,5
@@ -72,7 +76,7 @@ void dummy_main() // Main on the fix position
    real_main();
 }
 
-#ORG LOADER_RESERVED+FLASH_BLOCK_SIZE,getenv("PROGRAM_MEMORY")-130 auto=0 default
+#ORG LOADER_RESERVED+FLASH_BLOCK_SIZE,getenv("PROGRAM_MEMORY")-BLOADER_MAIN_LENGTH auto=0 default
 
 unsigned int atoi_b16(char *s)  // Convert two hex characters to an int8
 {
@@ -107,7 +111,7 @@ void pause()
 }
 
 #SEPARATE
-boot_loader()
+void boot_loader()
 {
    int  buffidx;
    char buffer[BUFFER_LEN_LOD];
@@ -117,7 +121,7 @@ boot_loader()
    int16 addr;
    int32 next_addr;
 
-   int8  dataidx, i, count;
+   int8  dataidx, i;
    union program_data {
       int8  i8[16];
       int16 i16[8];
@@ -217,7 +221,7 @@ boot_loader()
 
 #ORG default
 
-#ORG getenv("PROGRAM_MEMORY")-129,getenv("PROGRAM_MEMORY")-1 auto=0
+#ORG getenv("PROGRAM_MEMORY")-BLOADER_MAIN_LENGTH+1,getenv("PROGRAM_MEMORY")-1 auto=0
 void main()
 {
    int8  timeout;

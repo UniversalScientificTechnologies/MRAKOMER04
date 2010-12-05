@@ -1,6 +1,6 @@
 /*------------------- DUMMY BOOT LOADER --------------------------------------------*/
 #define FLASH_BLOCK_SIZE   32
-#define LOADER_RESERVED    getenv("PROGRAM_MEMORY")-26*FLASH_BLOCK_SIZE
+#define LOADER_RESERVED    getenv("PROGRAM_MEMORY")-24*FLASH_BLOCK_SIZE
 #define BUFFER_LEN_LOD     46
 #if FLASH_BLOCK_SIZE != getenv("FLASH_ERASE_SIZE")/2
   #error Wrong length of the Flash Block Size. getenv("FLASH_ERASE_SIZE")/getenv("FLASH_WRITE_SIZE")
