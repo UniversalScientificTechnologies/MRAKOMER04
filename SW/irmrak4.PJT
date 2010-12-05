@@ -32,8 +32,8 @@ AdditionalOptionString=
 0=0000 main.c 0 0 796 451 3 0
 
 [Opened Files]
-1=C:\Dokumenty\MLAB\Designs\MRAKOMER4\SW\irmrak4.c
-2=C:\Dokumenty\MLAB\Designs\MRAKOMER4\SW\irmrak4.h
+1=2zone\irmrak4.c
+2=
 3=C:\Program Files\PICC\devices\16F88.h
 4=C:\Dokumenty\MLAB\Designs\MRAKOMER4\SW\smb.c
 5=C:\Program Files\PICC_old\drivers\string.h
