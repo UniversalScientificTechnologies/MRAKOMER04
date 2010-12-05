@@ -34,13 +34,14 @@ AdditionalOptionString=
 [Opened Files]
 1=irmrak4.c
 2=irmrak4.h
-3=..\..\..\..\..\..\..\..\Program Files\PICC\devices\16F88.h
-4=..\..\..\..\..\..\..\..\Program Files\PICC\drivers\TOUCH.C
-5=..\..\..\..\..\..\..\..\Program Files\PICC\drivers\string.h
-6=..\..\..\..\..\..\..\..\Program Files\PICC\drivers\stddef.h
-7=..\..\..\..\..\..\..\..\Program Files\PICC\drivers\ctype.h
-8=smb.c
-9=
+3=..\..\..\..\..\..\..\..\Program Files\PICC\Devices\16F88.h
+4=..\..\..\..\..\..\..\..\Program Files\PICC\Drivers\string.h
+5=..\..\..\..\..\..\..\..\Program Files\PICC\Drivers\stddef.h
+6=..\..\..\..\..\..\..\..\Program Files\PICC\Drivers\ctype.h
+7=smb.c
+8=dbloader.c
+9=TOUCH.C
+10=
 [Units]
 Count=1
 1=irmrak4 (main)

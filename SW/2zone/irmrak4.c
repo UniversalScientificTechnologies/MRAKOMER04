@@ -3,7 +3,6 @@
 #define ID "$Id$"
 
 #include "irmrak4.h"
-#include <TOUCH.C>
 
 #bit CREN = 0x18.4      // USART registers
 #bit SPEN = 0x18.7
@@ -20,7 +19,6 @@
 #define  RESPONSE_DELAY 100      // Reaction time after receiving a command
 #define  SAFETY_COUNT   90       // Time of one emergency cycle
 #define  SEND_DELAY     50       // Time between two characters on RS232
-#define  ERROR          -32000   // Error flag
 
 #define  DOME        PIN_B4   // Dome controll port
 #define  HEATING     PIN_B3   // Heating for defrosting
@@ -51,27 +49,23 @@ void welcome(void)               // Welcome message
    char  REV[50]=ID;       // Buffer for concatenate of a version string
 
    if (REV[strlen(REV)-1]=='$') REV[strlen(REV)-1]=0;
-   printf("\n\r\n\r# Mrakomer %s (C) 2007 KAKL\n\r",VER);   // Welcome message
-   printf("#%s\n\r",&REV[4]);
-   printf("#\n\r");
-   printf("# h - Switch On Heating for 20s.\n\r");
-   printf("# c - Need Colder. Switch Off Heating.\n\r");
-   printf("# o - Open the Dome for 20s.\n\r");
-   printf("# l - Lock the Dome.\n\r");
-   printf("# x - Open the Dome and switch On Heating.\n\r");
-   printf("# i - Print this Information.\n\r");
-   printf("# r - Repeat measure every second.\n\r");
-   printf("# s - Single measure.\n\r");
-   printf("# u - Update firmware. Go to the Boot Loader.\n\r");
-   printf("#\n\r");
+   printf("\r\n\r\n# Mrakomer %s (C) 2007 UST\n\r",VER);   // Welcome message
+   printf("#%s\r\n",&REV[4]);
+   printf("#\r\n");
+   printf("# commands:\r\n");
+   printf("# h_eat, c_old, o_pen, l_ock, x_open, ");
+   printf("i_nfo, r_epeat, a_uto, s_single, u_pdate\r\n");
+   printf("#\r\n");
    printf("# <ver> <sequence> <inside[1/100 C]> <sky[1/100 C]> <sky[1/100 C]> ");
-   printf("<ambient[1/100 C]> <heating[s]> <dome[s]> <check>\n\r\n\r");
+   printf("<ambient[1/100 C]> <heating[s]> <dome[s]> <check>\r\n\r\n");
+
 //---WDT
    restart_wdt();
 }
 
 
 #include "smb.c"                 // System Management Bus driver
+#include "TOUCH.C"
 
 
 // Read sensor's RAM
@@ -145,7 +139,8 @@ void main()
    signed int16 ta, to1, to2, tTouch;
    int8 tLSB,tMSB;                     // Temperatures from TouchMemory
    int8 safety_counter;
-   int1 repeat;
+   int1 repeat;                        // Status flags
+   int1 automatic;
 
    output_high(DOME);                   // Close Dome
    output_low(HEATING);                 // Heating off
@@ -203,23 +198,28 @@ void main()
          {
             case 'h':
                heat=MAXHEAT;           // Need heating
+               automatic=FALSE;
                break;
 
             case 'c':
                heat=0;                 // Need colder
+               automatic=FALSE;
                break;
 
             case 'o':
                open=MAXOPEN;           // Open the dome
+               automatic=FALSE;
                break;
 
             case 'x':
                open=MAXOPEN;           // Open the dome
                heat=MAXHEAT;           // Need heating
+               automatic=FALSE;
                break;
 
             case 'l':
                open=0;                 // Lock the dome
+               automatic=FALSE;
                break;
 
             case 'i':
@@ -228,10 +228,17 @@ void main()
 
             case 'r':
                repeat=TRUE;            // Repeated measure mode
+               automatic=FALSE;
                break;
 
             case 's':
                repeat=FALSE;            // Single measure mode
+               automatic=FALSE;
+               break;
+
+            case 'a':
+               repeat=TRUE;            // Automatic mode
+               automatic=TRUE;
                break;
 
             case 'u':
@@ -272,18 +279,21 @@ void main()
          if ((SN[8]==TM_check_CRC(SN,8))&&(SN[7]==0x10)) // Check CRC and family code to prevent O's error
          {
             tTouch=make16(tMSB,tLSB); 
+            tTouch=tTouch*6+tTouch/4; // 1bit = 0,0625gradC recalculate to 1/100gradC
          }
          else
          {
-            tTouch=ERROR;
+            tTouch=-27315;
          }   
-
-for(n=0;n<9;n++) printf("%X ",SN[n]);
-         
-//!!!         printf("CRC %u %u ",SN[8],TM_check_CRC(SN,8)); 
-//!!!            printf("%.4f ",tTouch*6.25);
       }
    
+      if(automatic)        // Solve automatic mode
+      {
+         if(ta<1800) heat=MAXHEAT;           // Need heating
+         if((abs(to1-to2)<200)&&(tTouch>to1)&&(abs(tTouch/4-to1)>500)) 
+            open=MAXOPEN;           // Open the dome
+      }
+
       { // printf
          char output[8];   // Output buffer
          int8 j;           // String pointer
@@ -302,14 +312,7 @@ for(n=0;n<9;n++) printf("%X ",SN[n]);
          j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j]); check^=output[j++]; }
          sprintf(output,"%Ld \0", to2);
          j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j]); check^=output[j++]; }
-         if(tTouch==ERROR)
-         {
-            sprintf(output,"-27315 \0"); // Error condition
-         }
-         else
-         {
-            sprintf(output,"%Ld \0",tTouch*6+(tTouch/4)); // 1bit = 0,0625gradC
-         }
+         sprintf(output,"%Ld \0",tTouch);
          j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j]); check^=output[j++]; }
          sprintf(output,"%u \0", heat);
          j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j]); check^=output[j++]; }
@@ -320,11 +323,10 @@ for(n=0;n<9;n++) printf("%X ",SN[n]);
          delay(SEND_DELAY);
       }
       
-
 //---WDT
       restart_wdt();
    }
 }
 
 
-//#include "dbloader.c" // Space reservation for the BootLoader
+#include "dbloader.c" // Space reservation for the BootLoader
