@@ -152,6 +152,7 @@ void main()
    heat=0;
    open=0;
    repeat=TRUE;
+   automatic=FALSE;
 
    welcome();
 
