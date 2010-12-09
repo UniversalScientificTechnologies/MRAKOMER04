@@ -56,8 +56,8 @@ void welcome(void)               // Welcome message
 //   printf("# h_eat, c_old, o_pen, l_ock, x_open, ");
 //   printf("i_nfo, r_epeat, a_uto, s_single, u_pdate\r\n");
 //   printf("#\r\n");
-   printf("# ver sequence inside[1/100 C] sky[1/100 C] sky[1/100 C] ");
-   printf("ambient[1/100 C] heating[s] dome[s] check\r\n\r\n");
+   printf("# ver seq in[1/100 C] sky[1/100 C] sky[1/100 C] ");
+   printf("out[1/100 C] heat[s] dome[s] check\r\n\r\n");
 
 //---WDT
    restart_wdt();
@@ -254,9 +254,9 @@ void main()
       ta=tempa*2-27315;    // °K -> °C
 
       temp=ReadTemp(SA, RAM_Tobj1);
-      to1=temp*2-27315;
+      if (temp>0x48E1) {to1=-27315;} else {to1=temp*2-27315;}
       temp=ReadTemp(SA, RAM_Tobj2);
-      to2=temp*2-27315;
+      if (temp>0x48E1) {to2=-27315;} else {to2=temp*2-27315;}
 
       touch_present();   //Issues a reset of Touch Memory device
       touch_write_byte(0xCC);    
@@ -290,7 +290,7 @@ void main()
       if(automatic)        // Solve automatic mode
       {
          if(ta<1800) heat=MAXHEAT;           // Need heating
-         if((abs(to1-to2)<200)&&(tTouch>to1)&&(abs(tTouch/4-to1)>500)) 
+         if((abs(to1-to2)<100)&&(tTouch>to1)&&(abs(tTouch/2-to1)>600)) 
             open=MAXOPEN;           // Open the dome
       }
 
