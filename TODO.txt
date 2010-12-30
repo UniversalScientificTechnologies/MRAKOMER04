@@ -1,0 +1,3 @@
+Opravit odmaskovani propojek
+Pridat venkovni teplomer
+Pridat bezpecnostni cidlo na prunik vlhkosti.
