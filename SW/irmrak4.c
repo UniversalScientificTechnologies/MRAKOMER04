@@ -19,6 +19,7 @@
 #define  RESPONSE_DELAY 100      // Reaction time after receiving a command
 #define  SAFETY_COUNT   90       // Time of one emergency cycle
 #define  SEND_DELAY     50       // Time between two characters on RS232
+#define  TEMPERATURE_INSIDE   1800  // Keep this temperature inside MM's box
 
 #define  DOME        PIN_B4   // Dome controll port
 #define  HEATING     PIN_B3   // Heating for defrosting
@@ -56,8 +57,8 @@ void welcome(void)               // Welcome message
 //   printf("# h_eat, c_old, o_pen, l_ock, x_open, ");
 //   printf("i_nfo, r_epeat, a_uto, s_single, u_pdate\r\n");
 //   printf("#\r\n");
-   printf("# ver seq in[1/100 C] sky[1/100 C] sky[1/100 C] ");
-   printf("out[1/100 C] heat[s] dome[s] check\r\n\r\n");
+//   printf("# ver seq in[1/100 C] sky[1/100 C] sky[1/100 C] ");
+//   printf("out[1/100 C] heat[s] dome[s] check\r\n\r\n");
 
 //---WDT
    restart_wdt();
@@ -136,7 +137,7 @@ inline int8 TM_check_CRC(unsigned int8 *sn, unsigned int8 num)
 void main()
 {
    unsigned int16 seq, temp, tempa;
-   signed int16 ta, to1, to2, tTouch;
+   signed int16 ta, to1, to2, tTouch, told;
    int8 tLSB,tMSB;                     // Temperatures from TouchMemory
    int8 safety_counter;
    int1 repeat;                        // Status flags
@@ -165,7 +166,7 @@ void main()
    delay_ms(1000);
 //---WDT
    restart_wdt();
-
+   
    while(TRUE)    // Main Loop
    {
       safety_counter=SAFETY_COUNT;  // Heating and Dome  Count Down
@@ -177,10 +178,10 @@ void main()
 
          if (safety_counter>=SAFETY_COUNT)
          {
+            if (heat>0) { output_high(HEATING); } else { output_low(HEATING); }
+
             if (heat>0) heat--;
             if (open>0) open--;
-
-            if (heat>0) { output_high(HEATING); } else { output_low(HEATING); }
 
             safety_counter=0;
 //---WDT
@@ -289,9 +290,10 @@ void main()
    
       if(automatic)        // Solve automatic mode
       {
-         if(ta<1800) heat=MAXHEAT;           // Need heating
-         if((abs(to1-to2)<80)&&(tTouch>to1)&&(abs(tTouch-to1)>1500)) 
-            open=MAXOPEN;           // Open the dome
+         if(((ta<400)||(ta<(tTouch+400)))&&(ta<2000)&&(ta<told)) heat=1;           // Need heating
+         told=ta;
+         if((abs(to1-to2)<100)&&(tTouch>to1)&&(abs(tTouch-to1)>800)) 
+            open=1;           // Open the dome
       }
 
       { // printf
