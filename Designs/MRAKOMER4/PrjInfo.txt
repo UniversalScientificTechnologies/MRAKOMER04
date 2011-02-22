@@ -15,4 +15,7 @@ This is a device for measurement the clouds coverage. This device is especially 
 [InfoLongDescription.cs]
 Přístroj je navržen pro detekci kritického lokálního množství vody v atmosféře jako součást robotických dalekohledů. Tento model je druhou vylepšenou generací bez pohyblivých částí.
 
+[InfoBuyUST]
+http://www.ust.cz/shop/product_info.php?cPath=29&products_id=43
+
 [End]
