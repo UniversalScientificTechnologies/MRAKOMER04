@@ -1,5 +1,5 @@
 /**** BootLoader ****/
-#define VERSION "1.1"
+#define VERSION "1.2"
 #define ID "$Id$"
 
 #CASE    // Case sensitive compiler
