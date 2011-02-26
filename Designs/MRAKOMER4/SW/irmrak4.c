@@ -53,7 +53,7 @@ void welcome(void)               // Welcome message
    printf("\r\n\r\n# Mrakomer %s (C) 2007 UST\n\r",VER);   // Welcome message
    printf("#%s\r\n",&REV[4]);
 //   printf("#\r\n");
-   printf("# commands: h, c, o, l, x, i, r, a, s, u\r\n");
+//   printf("# commands: h, c, o, l, x, i, r, a, s, u\r\n");
 //   printf("# h_eat, c_old, o_pen, l_ock, x_open, ");
 //   printf("i_nfo, r_epeat, a_uto, s_single, u_pdate\r\n");
 //   printf("#\r\n");
@@ -137,9 +137,10 @@ inline int8 TM_check_CRC(unsigned int8 *sn, unsigned int8 num)
 void main()
 {
    unsigned int16 seq, temp, tempa;
-   signed int16 ta, to1, to2, tTouch, told;
+   signed int16 ta, to1, to2, tTouch, taOld;
    int8 tLSB,tMSB;                     // Temperatures from TouchMemory
    int8 safety_counter;
+   int8 heatTime, heatPower;
    int1 repeat;                        // Status flags
    int1 automatic;
 
@@ -152,6 +153,9 @@ void main()
    seq=0;         // Variables initiation
    heat=0;
    open=0;
+   heatTime=0;
+   heatPower=0;
+   taOld=2000;
    repeat=TRUE;
    automatic=FALSE;
 
@@ -290,10 +294,21 @@ void main()
    
       if(automatic)        // Solve automatic mode
       {
-         if(((ta<400)||(ta<(tTouch+400)))&&(ta<2000)&&(ta<told)) heat=1;           // Need heating
-         told=ta;
-         if((abs(to1-to2)<100)&&(tTouch>to1)&&(abs(tTouch-to1)>800)) 
-            open=1;           // Open the dome
+         if (heatTime==0) 
+         {
+            if((ta<taOld)&&(heatPower<20)) heatPower++;  // Need wormer ?
+            if((ta>taOld)&&(heatPower>0)) heatPower--;   // Need colder ?         
+            
+            if((ta>=300)&&(ta<2000)) heatPower=1;
+            if(ta>=2000) heatPower=0;
+
+            taOld=ta;
+            heatTime=20;
+            if(ta>-10000) heat=heatPower;
+         }
+         heatTime--;
+                  
+         if((abs(to1-to2)<100)&&(tTouch>to1)&&(abs(tTouch-to1)>800)) open=1;           // Open the dome
       }
 
       { // printf
