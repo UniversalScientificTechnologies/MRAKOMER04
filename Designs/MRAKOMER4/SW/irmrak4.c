@@ -137,10 +137,10 @@ inline int8 TM_check_CRC(unsigned int8 *sn, unsigned int8 num)
 void main()
 {
    unsigned int16 seq, temp, tempa;
-   signed int16 ta, to1, to2, tTouch, taOld;
+   signed int16 ta, to1, to2, tTouch;
    int8 tLSB,tMSB;                     // Temperatures from TouchMemory
    int8 safety_counter;
-   int8 heatTime, heatPower;
+   int8 heatTime;
    int1 repeat;                        // Status flags
    int1 automatic;
 
@@ -154,8 +154,6 @@ void main()
    heat=0;
    open=0;
    heatTime=0;
-   heatPower=0;
-   taOld=2000;
    repeat=TRUE;
    automatic=FALSE;
 
@@ -295,20 +293,20 @@ void main()
       if(automatic)        // Solve automatic mode
       {
          if (heatTime==0) 
-         {
-            if((ta<taOld)&&(heatPower<20)) heatPower++;  // Need wormer ?
-            if((ta>taOld)&&(heatPower>0)) heatPower--;   // Need colder ?         
-            
-            if((ta>=300)&&(ta<2000)) heatPower=1;
-            if(ta>=2000) heatPower=0;
-
-            taOld=ta;
-            heatTime=20;
-            if(ta>-10000) heat=heatPower;
+         {           
+            if((tTouch<=-300)&&(ta<=300)) {heat=(700-tTouch)/400;} else {heat=1;}    // Needs warmer?
+            heatTime=MAXHEAT;
          }
          heatTime--;
+         
+         if(ta>2000) heat=0;         // Overtemperature protection
+         if(tTouch>2000) heat=0; 
+         if(ta<-10000) heat=0;       // Sensor Error protection
+         if(tTouch<-10000) heat=0; 
                   
-         if((abs(to1-to2)<100)&&(tTouch>to1)&&(abs(tTouch-to1)>800)) open=1;           // Open the dome
+         if((abs(to1-to2)<100)&&(tTouch>to1)&&(abs(tTouch-to1)>800)) open=1;    // Control the dome
+         if(to1<-10000) open=0;      // Sensor Error protection
+         if(tTouch<-10000) open=0; 
       }
 
       { // printf
