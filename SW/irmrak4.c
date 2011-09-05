@@ -50,7 +50,7 @@ void welcome(void)               // Welcome message
    char  REV[50]=ID;       // Buffer for concatenate of a version string
 
    if (REV[strlen(REV)-1]=='$') REV[strlen(REV)-1]=0;
-   printf("\r\n\r\n# Mrakomer %s (C) 2007 UST\n\r",VER);   // Welcome message
+   printf("\r\n\r\n# Mrakomer %s (C) 2011 UST\r\n",VER);   // Welcome message
    printf("#%s\r\n",&REV[4]);
 //   printf("#\r\n");
 //   printf("# commands: h, c, o, l, x, i, r, a, s, u\r\n");
