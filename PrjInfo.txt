@@ -4,7 +4,7 @@
 //
 
 [InfoShortDescription.en]
-Mrakoměr4 (Claudsmeter) 
+Mrakoměr4 (Clouds sensor) 
 
 [InfoShortDescription.cs]
 Mrakoměr4
