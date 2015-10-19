@@ -144,6 +144,10 @@ void main()
    int1 repeat;                        // Status flags
    int1 automatic;
 
+//KAKL!!!
+int8 SN[10];
+
+
    output_high(DOME);                   // Close Dome
    output_low(HEATING);                 // Heating off
 
@@ -270,7 +274,7 @@ void main()
       delay(MEASURE_DELAY);   // Delay to a next measurement
 
       {
-         int8 SN[10];
+//KAKL!!!         int8 SN[10];
          int8 n;
 
          touch_present();   //Issues a reset and returns true if the touch device is there.
@@ -290,6 +294,7 @@ void main()
          }   
       }
    
+/*
       if(automatic)        // Solve automatic mode
       {
          if (heatTime==0) 
@@ -308,7 +313,7 @@ void main()
          if(to1<-10000) open=0;      // Sensor Error protection
          if(tTouch<-10000) open=0; 
       }
-
+*/
       { // printf
          char output[8];   // Output buffer
          int8 j;           // String pointer
@@ -333,8 +338,21 @@ void main()
          j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j]); check^=output[j++]; }
          sprintf(output,"%u \0", open);
          j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j]); check^=output[j++]; }
-         sprintf(output,"*%X\r\n\0", check);
+//KAKL!!!         sprintf(output,"*%X\r\n\0", check);
+         sprintf(output,"*%X \0", check);
          j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
+{
+         int n;
+         for (n=0;n<9;n++)
+         {
+            sprintf(output,"%X \0", SN[n]);
+         
+            j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
+         }
+}
+         sprintf(output,"\r\n\0");
+         j=0; while(output[j]!=0) { delay(SEND_DELAY); putc(output[j++]); }
+
          delay(SEND_DELAY);
       }
       

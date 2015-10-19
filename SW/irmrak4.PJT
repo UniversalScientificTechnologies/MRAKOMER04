@@ -1,22 +1,19 @@
 [PROJECT]
-Target=irmrak4.HEX
-Development_Mode=2
+Target=irmrak4.hex
+Development_Mode=
 Processor=0x688F
 Processor_Text=PIC16F88
 ToolSuite=CCS
-
 [Directories]
-Include=
+Include=z:/home/kakl/.wine/drive_c/Program Files (x86)/PICC/Devices;z:/home/kakl/.wine/drive_c/Program Files (x86)/PICC/Drivers;
 Library=
 LinkerScript=
-
 [Target Data]
-FileList=C:\Dokumenty\MLAB\Designs\MRAKOMER4\SW\2zone\irmrak4.c
+FileList=Z:\home\kakl\svn\MLAB\Designs\MRAKOMER4\SW\irmrak4.c
 BuildTool=C-COMPILER
 OptionString=+FM
 AdditionalOptionString=
 BuildRequired=1
-
 [irmrak4.c]
 Type=4
 Path=
@@ -24,13 +21,10 @@ FileList=
 BuildTool=
 OptionString=
 AdditionalOptionString=
-
 [mru-list]
 1=irmrak4.c
-
 [Windows]
-0=0000 irmrak4.c 0 0 796 451 3 0
-
+0=0000 %S 0 0 796 451 3 0
 [Opened Files]
 1=irmrak4.c
 2=
@@ -42,6 +36,23 @@ AdditionalOptionString=
 8=TOUCH.C
 9=dbloader.c
 10=
+[defines]
+enabled=0
+D1=
+V1=
+[fileformats]
+forcecoff=0
+debug=4
+error=2
+object=0
+list=0
+scratch=0
+sta=1
+tre=1
+allerrors=1
+allwarnings=1
+stayupne=3
+stayupoe=0
 [Units]
 Count=1
 1=irmrak4 (main)
