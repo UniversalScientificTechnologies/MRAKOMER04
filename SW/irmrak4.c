@@ -283,6 +283,7 @@ int8 SN[10];
          for(n=0;n<9;n++) SN[n]=touch_read_byte();
          tLSB=SN[0];
          tMSB=SN[1];
+         /*KAKL!!!
          if ((SN[8]==TM_check_CRC(SN,8))&&(SN[7]==0x10)) // Check CRC and family code to prevent O's error
          {
             tTouch=make16(tMSB,tLSB); 
@@ -292,6 +293,10 @@ int8 SN[10];
          {
             tTouch=-27315;
          }   
+         */
+         tTouch=make16(tMSB,tLSB); 
+         tTouch=tTouch*6+tTouch/4; // 1bit = 0,0625gradC recalculate to 1/100gradC
+
       }
    
 /*
