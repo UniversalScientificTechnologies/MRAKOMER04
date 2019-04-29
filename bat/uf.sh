@@ -1,3 +1,4 @@
+stty -F /dev/ttyUSB0 ospeed 2400
 echo -n u > /dev/ttyUSB$1
 echo u
 sleep 2
