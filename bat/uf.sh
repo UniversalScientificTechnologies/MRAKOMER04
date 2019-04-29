@@ -1,6 +1,4 @@
 stty -F /dev/ttyUSB$1 2400
-echo -n u > /dev/ttyUSB$1
-echo u
 sleep 2
 echo -n uf > /dev/ttyUSB$1
 echo uf
