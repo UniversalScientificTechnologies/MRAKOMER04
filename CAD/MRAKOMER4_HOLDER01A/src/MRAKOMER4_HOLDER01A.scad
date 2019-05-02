@@ -1,6 +1,6 @@
 $fn=50;
 //otvory v krabičce
-uchyt_roztec=85;
+uchyt_roztec=38;
 uchyt_prumer=4.5;
 
 
@@ -9,7 +9,7 @@ PCB_prumer=3.4;
 PCB_roztec=70;
 PCB_vyska_soucastek=7;
 
-vyska_materialu=3;
+vyska_materialu=4;
 sire_materialu=15;
 
 
