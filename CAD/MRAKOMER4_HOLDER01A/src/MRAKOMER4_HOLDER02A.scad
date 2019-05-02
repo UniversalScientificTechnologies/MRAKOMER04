@@ -5,7 +5,7 @@ senzor_prumer_s_rantlem=9;
 
 vyska_drzaku=45;
 
-pruchodka_prumer=10; //velka ma 14
+pruchodka_prumer=13.6;
 
 
 
