@@ -1,5 +1,0 @@
-use <../src/MRAKOMER4_HOLDER02A.scad>
-
-$fn=50;
-
-MRAKOMER4_HOLDER02A();

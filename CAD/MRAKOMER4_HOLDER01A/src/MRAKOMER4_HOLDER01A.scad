@@ -1,6 +1,6 @@
 $fn=50;
 //otvory v krabičce
-uchyt_roztec=38;
+uchyt_roztec=42.5;
 uchyt_prumer=4.5;
 
 
