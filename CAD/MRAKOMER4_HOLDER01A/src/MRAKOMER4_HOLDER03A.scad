@@ -1,17 +1,17 @@
 $fn=50;
 
 
-rozmer_x=65.8;
-rozmer_y=42.8;
-hrana_okraje=1.2;
+rozmer_x=66.3;
+rozmer_y=43.3;
+hrana_okraje=1.4;
 
-vyska_soucastek=4;
+vyska_soucastek=0;
 
 M3_vyska_matky=3;
 M3_sirka_matky=6.7;
 M3_prumer_hlavy_sroubu=6;
 M3_vyska_hlavy=5;
-M3_prumer=3.2;
+M3_prumer=3.4;
 
 roztec_der=10.16;
 sila_materialu=2;
@@ -38,7 +38,10 @@ cube([rozmer_x-2*hrana_okraje,rozmer_y-2*hrana_okraje,vyska_soucastek+M3_vyska_m
    translate([1,1,vyska_soucastek+M3_vyska_matky+M3_vyska_hlavy+sila_materialu])  
 cube([rozmer_x,rozmer_y,vyska_soucastek+M3_vyska_matky+M3_vyska_hlavy+sila_materialu+0.1+1.4],center=false);     
     
+    //odstranění části bočnice
     
+   translate([rozmer_x/2-5,-5,M3_vyska_matky+sila_materialu])    
+ cube([10,rozmer_y,vyska_soucastek+M3_vyska_matky+M3_vyska_hlavy+sila_materialu+3],center=false);    
     
     
     
@@ -54,8 +57,9 @@ cube([rozmer_x,rozmer_y,vyska_soucastek+M3_vyska_matky+M3_vyska_hlavy+sila_mater
    
     
     //valec prostredni
-   translate([rozmer_x/2,(rozmer_y+2)/2,0])   
-   cylinder(h=vyska_soucastek+M3_vyska_matky+M3_vyska_hlavy+sila_materialu, r=(M3_sirka_matky+sila_materialu)/2, center=false);  
+   translate([rozmer_x/2-5,(rozmer_y+2)/2-5,0])   
+    cube([10,10,vyska_soucastek+M3_vyska_matky+M3_vyska_hlavy+sila_materialu],center=false);      
+  
     
    //valec krajni 1
       translate([rozmer_x/2,5.08,0])   
