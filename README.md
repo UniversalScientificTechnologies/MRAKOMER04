@@ -5,7 +5,7 @@
 </p>
 
 ### Dokumentační list:
-[CS](https://github.com/UniversalScientificTechnologies/MRAKOMER04/blob/MRAKOMER04B/DOC/MRAKOMER04B.cs.pdf)/[AJ](https://github.com/UniversalScientificTechnologies/MRAKOMER04/blob/MRAKOMER04B/DOC/MRAKOMER04B.aj.pdf)
+[CS](https://github.com/UniversalScientificTechnologies/MRAKOMER04/blob/MRAKOMER04B/DOC/MRAKOMER04B.cs.pdf)/[EN](https://github.com/UniversalScientificTechnologies/MRAKOMER04/blob/MRAKOMER04B/DOC/MRAKOMER04B.en.pdf)
 
 ### Základní parametry:
 
