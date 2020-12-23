@@ -1,5 +1,11 @@
-# MRAKOMER4
-Základní parametry:
+# MRAKOMER04B
+
+<p float="left">
+<img src="/DOC/img/MRAKOMER04B_03.jpg" width="60%" />
+</p>
+
+
+### Základní parametry:
 
   -přesnost měření 1 °C
   
