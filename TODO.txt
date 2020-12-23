@@ -1,6 +1,0 @@
-Opravit odmaskovani propojek
-Pridat venkovni teplomer
-Pridat bezpecnostni cidlo na prunik vlhkosti.
-Pridat ochranny odpor do Gate spinaciho tranzistoru pro topeni. 
-
-Unekterych mrakomeru zaznamenan problem se smazanim Firmwaru s variantou PIC16F88 (ne LF na 3,3V)
