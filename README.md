@@ -16,3 +16,11 @@
   -rozsah měřených teplot -65 az +40 °C
   
   -rozsah pracovních teplot -30 az +40 °C
+
+<p float="left">
+<img src="/DOC/img/MRAKOMER04B_01.jpg" width="60%" />
+</p>
+
+<p float="left">
+<img src="/DOC/img/MRAKOMER04B_02.jpg" width="60%" />
+</p>
