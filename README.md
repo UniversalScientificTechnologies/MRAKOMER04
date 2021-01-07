@@ -2,9 +2,10 @@
 
 ![Set of MRAKOMER04 internal and outdoor units](/DOC/img/MRAKOMER04B_03.jpg)
 
-### Datasheet:
+### Documentation:
 
-[CS](https://github.com/UniversalScientificTechnologies/MRAKOMER04/blob/MRAKOMER04B/DOC/MRAKOMER04B.cs.pdf)/[EN](https://github.com/UniversalScientificTechnologies/MRAKOMER04/blob/MRAKOMER04B/DOC/MRAKOMER04B.en.pdf)
+  - [Czech](/DOC/MRAKOMER04B.cs.pdf)
+  - [English](/DOC/MRAKOMER04B.en.pdf)
 
 ### Parameters:
 
