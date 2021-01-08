@@ -1,4 +1,4 @@
-# MRAKOMER04B
+# MRAKOMER04B (MRAKOMER 4.0 equivalent)
 
 ![Set of MRAKOMER04 internal and outdoor units](/DOC/img/MRAKOMER04B_03.jpg)
 
