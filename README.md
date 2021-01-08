@@ -1,12 +1,18 @@
-# MRAKOMER4
-Základní parametry:
+# MRAKOMER04A (original MRAKOMER 4.0)
 
-  -přesnost měření 1 °C
-  
-  -měření ve dvou zónách s FOV 40 deg v jedné zóně
-  
-  -periodicita měření 1 s
-  
-  -rozsah měřených teplot -65 az +40 °C
-  
-  -rozsah pracovních teplot -30 az +40 °C
+![Set of MRAKOMER04 internal and outdoor units](/DOC/img/mrakomer4_Small.jpg)
+
+### Documentation:
+
+  - [Czech](/DOC/Mrakomer40_cs.pdf)
+  - [English](/DOC/Mrakomer40.en.pdf)
+
+### Parameters:
+
+  - Temperature measurement accuracy 1 °C  
+  - Single zone measurement in FOV 90 deg
+  - Measurement period 1 second
+  - Measurement temperature range -65 to +40 °C
+  - Operating temperature range -30 az +40 °C
+
+![MRAKOMER04 external unit](/DOC/img/Mrakomer40_mount.jpg)
