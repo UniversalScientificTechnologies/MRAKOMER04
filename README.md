@@ -13,6 +13,6 @@
   - Single zone measurement in FOV 90 deg
   - Measurement period 1 second
   - Measurement temperature range -65 to +40 °C
-  - Operating temperature range -30 az +40 °C
+  - Operating temperature range -30 to +40 °C
 
 ![MRAKOMER04 external unit](/DOC/img/Mrakomer40_mount.jpg)
